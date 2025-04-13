@@ -12,26 +12,16 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
     //val model = viewModel<AppViewModel>() -> To pass a model down
 
     NavHost(navController = navController,
-        startDestination = "greeting",
+        startDestination = "someView", // hier ist die start-seite
         modifier = modifier) {
 
-        composable("greeting") {
-            Greeting(modifier = modifier ,
-                navController = navController
-               // model: model -> pass model down and init it
-            )
-        }
-
-        composable("viewmodelExample") {
-            ViewModelExample(modifier = modifier,
-                onNavigateBack = { navController.navigate("greeting") }
-            )
-        }
-
-        composable("someView") {
+        /** DIESER BLOCK MUSS PRO Componente .kt file erstellt werden*/
+        composable("someView") { // "someView ist der Name, mit der Navigiert
             SomeView(modifier = modifier,
                 navController = navController
             )
         }
+        /** BIS HIER **/
+
     }
 }
