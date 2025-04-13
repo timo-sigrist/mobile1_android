@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.exampleapp"
+    namespace = "com.example.buildnote"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.exampleapp"
+        applicationId = "com.example.buildnote"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

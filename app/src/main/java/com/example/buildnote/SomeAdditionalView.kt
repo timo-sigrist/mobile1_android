@@ -1,4 +1,4 @@
-package com.example.exampleapp
+package com.example.buildnote
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

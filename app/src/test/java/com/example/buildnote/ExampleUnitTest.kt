@@ -1,4 +1,4 @@
-package com.example.exampleapp
+package com.example.buildnote
 
 import org.junit.Test
 

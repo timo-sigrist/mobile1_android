@@ -1,8 +1,7 @@
-package com.example.exampleapp
+package com.example.buildnote
 
 import android.app.Application
 import android.content.ContentResolver
-import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
@@ -34,26 +33,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
-import androidx.work.Worker
-import androidx.work.WorkerParameters
-import androidx.work.impl.WorkManagerImpl
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.beust.klaxon.Klaxon
-import com.example.exampleapp.ui.theme.ExampleAppTheme
+import com.example.buildnote.ui.theme.ExampleAppTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import org.json.JSONObject
 
@@ -107,7 +97,7 @@ fun Greeting(modifier: Modifier = Modifier,
                 name.value = "New Timo"
                 Log.i("Button","Button clicked")
             }) {
-                Icon(painterResource(id = R.drawable.baseline_home_24), contentDescription = "Home Icon")
+                Icon(painterResource(id = com.example.buildnote.R.drawable.baseline_home_24), contentDescription = "Home Icon")
                 Text("Change name")
             }
         }
