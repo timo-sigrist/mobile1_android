@@ -1,53 +1,35 @@
 package com.example.buildnote
 
-import android.app.Application
-import android.content.ContentResolver
-import android.database.Cursor
-import android.net.Uri
 import android.os.Bundle
-import android.provider.ContactsContract
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.example.buildnote.ui.theme.ExampleAppTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Chat
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
-import com.beust.klaxon.Klaxon
-import com.example.buildnote.ui.theme.ExampleAppTheme
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import org.json.JSONObject
+import androidx.compose.ui.zIndex
 
-import com.google.accompanist.permissions.rememberPermissionState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,21 +37,77 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ExampleAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    /*Greeting(
-                       modifier = Modifier.padding(innerPadding)
-                    )
-                     */
-                    // ViewModelExample(modifier = Modifier.padding(innerPadding))
+                // Login-Zustand: Setze isLoggedIn immer initial auf false, damit man sich neu einloggen muss.
+                var isLoggedIn by remember { mutableStateOf(false) }
 
-                    // Navigation
+
+
+                if (!isLoggedIn) {
+                    // Zeige die Login-Seite an, falls nicht eingeloggt.
+                    LoginScreen(onLoginSuccess = { isLoggedIn = true })
+                } else {
+                    // Bei erfolgreichem Login: Zeige die Hauptanwendung.
                     val navController = rememberNavController()
-                    AppNavigation(navController = navController, modifier = Modifier.padding(innerPadding))
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute = navBackStackEntry?.destination?.route
+
+                    val currentTitle = when (currentRoute) {
+                        "overview"            -> "Übersicht"
+                        "projekte"            -> "Projekte"
+                        "zeiterfassung"       -> "Zeiterfassung"
+                        "chat"                -> "Chat"
+                        "statussettings"      -> "Statusverwaltung"
+                        "statusrequest"       -> "Statusanfrage"
+                        "appointmentdetails"  -> "Termindetails"
+                        "projectdetails"      -> "Projektkartei"
+                        "materialliste"       -> "Materialliste"
+                        "addmaterial"         -> "Material hinzufügen"
+                        "createMeasurement"   -> "Aufmaß"          // ← hier hinzugefügt
+                        else                  -> "BuildNote"
+                    }
+
+
+
+
+
+
+
+                    val currentIcon = when (currentRoute) {
+                        "overview" -> BottomNavItem.Overview.icon
+                        "projekte" -> BottomNavItem.Projekte.icon
+                        "zeiterfassung" -> BottomNavItem.Zeiterfassung.icon
+                        "chat" -> BottomNavItem.Chat.icon
+                        else -> Icons.Filled.Home
+                    }
+
+
+
+                    Scaffold(
+                        topBar = {
+                            CustomTopBar(
+                                title = currentTitle,
+                                pageIcon = currentIcon,
+                                onProfileClick = { navController.navigate("settings") }
+                            )
+                        },
+                        bottomBar = {
+                            BottomNavigationBar(navController = navController)
+                        }
+                    ) { innerPadding ->
+                        // HIER:
+                        // - fillMaxSize() sorgt dafür, dass dein NavHost den gesamten
+                        //   verbleibenden Bereich einnimmt.
+                        // - padding(innerPadding) schiebt den Content genau unter die TopBar
+                        //   und genau oberhalb der BottomBar.
+                        AppNavigation(
+                            navController = navController,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding)
+                        )
+                    }
                 }
             }
         }
     }
 }
-
-
-

@@ -2,7 +2,15 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
 }
+
+
+
+
+    // ...
+
+
 
 android {
     namespace = "com.example.buildnote"
@@ -49,11 +57,18 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("androidx.compose.material:material-icons-extended:1.3.0")
+
+    implementation ("androidx.compose.ui:ui:1.3.0")
+    implementation ("androidx.compose.foundation:foundation:1.3.0")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 
     implementation(libs.volley)
     implementation ("com.beust:klaxon:5.5")
+    implementation ("androidx.compose.ui:ui:1.3.0")
+    implementation ("androidx.compose.foundation:foundation:1.3.0")
+    implementation ("androidx.compose.material3:material3:1.0.1")
 
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
@@ -70,4 +85,17 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+
+    dependencies {
+        // Google Maps Compose Integration
+        implementation ("com.google.maps.android:maps-compose:2.11.2")
+
+        // Google Play Services (Maps SDK)
+        implementation ("com.google.android.gms:play-services-maps:18.1.0")
+    }
+
+
+
 }
+
