@@ -52,19 +52,24 @@ class MainActivity : ComponentActivity() {
                     val currentRoute = navBackStackEntry?.destination?.route
 
                     val currentTitle = when (currentRoute) {
-                        "overview"            -> "Übersicht"
-                        "projekte"            -> "Projekte"
-                        "zeiterfassung"       -> "Zeiterfassung"
-                        "chat"                -> "Chat"
-                        "statussettings"      -> "Statusverwaltung"
-                        "statusrequest"       -> "Statusanfrage"
-                        "appointmentdetails"  -> "Termindetails"
-                        "projectdetails"      -> "Projektkartei"
-                        "materialliste"       -> "Materialliste"
-                        "addmaterial"         -> "Material hinzufügen"
-                        "createMeasurement"   -> "Aufmaß"          // ← hier hinzugefügt
-                        else                  -> "BuildNote"
+                        "overview"           -> "Übersicht"
+                        "projekte"           -> "Projekte"
+                        "zeiterfassung"      -> "Zeiterfassung"
+                        "zeit_nachtragen"     -> "Zeit nachtragen"
+                        "documents"          -> "Dokumente"         // ← hier eingefügt
+                        "chat"               -> "Chat"
+                        "statussettings"     -> "Statusverwaltung"
+                        "statusrequest"      -> "Statusanfrage"
+                        "appointmentdetails" -> "Termindetails"
+                        "projectdetails"     -> "Projektkartei"
+                        "materialliste"      -> "Materialliste"
+                        "addmaterial"        -> "Material hinzufügen"
+                        "createMeasurement"  -> "Aufmaß"
+                        else                 -> "BuildNote"
                     }
+
+
+
 
 
 

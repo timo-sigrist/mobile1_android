@@ -12,9 +12,15 @@ import com.example.buildnote.MaterialListScreen
 import com.example.buildnote.AddMaterialScreen
 import com.example.buildnote.CreateMeasurementScreen
 import com.example.buildnote.ZeiterfassungScreen
+import com.example.buildnote.ZeitNachtragenScreen
+import com.example.buildnote.DokumenteScreen
+import com.example.buildnote.AppointmentDetailsScreen
 import com.example.buildnote.StatusSettings
 import com.example.buildnote.StatusRequestScreen
-import com.example.buildnote.AppointmentDetailsScreen
+import com.example.buildnote.ChatScreen
+
+private const val ROUTE_ZEIT_NACHTRAGEN = "zeit_nachtragen"
+const val ROUTE_DOCUMENTS = "documents"
 
 @Composable
 fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifier) {
@@ -41,9 +47,25 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
                 modifier = modifier
             )
         }
-        // Zeiterfassung (ohne navController-Parameter)
+        // Zeiterfassung
         composable(BottomNavItem.Zeiterfassung.route) {
             ZeiterfassungScreen(
+                vm = appointmentViewModel,
+                navController = navController,
+                modifier = modifier
+            )
+        }
+        // Chat (projektbasiert)
+        composable(BottomNavItem.Chat.route) {
+            ChatScreen(
+                vm = appointmentViewModel,
+                modifier = modifier
+            )
+        }
+        // Neue Seite: Zeit nachtragen
+        composable(ROUTE_ZEIT_NACHTRAGEN) {
+            ZeitNachtragenScreen(
+                navController = navController,
                 vm = appointmentViewModel,
                 modifier = modifier
             )
@@ -51,6 +73,14 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
         // Projektdetails
         composable("projectdetails") {
             ProjectDetailsScreen(
+                navController = navController,
+                vm = appointmentViewModel,
+                modifier = modifier
+            )
+        }
+        // Dokumente
+        composable(ROUTE_DOCUMENTS) {
+            DokumenteScreen(
                 navController = navController,
                 vm = appointmentViewModel,
                 modifier = modifier
