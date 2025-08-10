@@ -1,4 +1,4 @@
-package com.example.buildnote
+package com.example.buildnote.views
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.buildnote.model.MaterialEntry
+import com.example.buildnote.viewmodel.AppointmentViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

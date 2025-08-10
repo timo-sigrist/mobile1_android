@@ -1,4 +1,4 @@
-package com.example.buildnote
+package com.example.buildnote.views
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
@@ -40,10 +40,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import androidx.navigation.NavController
-import com.example.buildnote.getTodaysUpdate
-import com.example.buildnote.Appointment
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.buildnote.AppointmentViewModel
+import com.example.buildnote.utils.StatusUpdate
+import com.example.buildnote.utils.getTodaysUpdate
+import com.example.buildnote.viewmodel.AppointmentViewModel
+import java.util.Calendar
 
 @Composable
 fun OverviewScreen(
@@ -56,9 +56,9 @@ fun OverviewScreen(
 
     // Funktion, um einen Tag hinzuzufügen oder abzuziehen.
     fun addDays(date: Date, days: Int): Date {
-        val calendar = java.util.Calendar.getInstance()
+        val calendar = Calendar.getInstance()
         calendar.time = date
-        calendar.add(java.util.Calendar.DAY_OF_YEAR, days)
+        calendar.add(Calendar.DAY_OF_YEAR, days)
         return calendar.time
     }
 

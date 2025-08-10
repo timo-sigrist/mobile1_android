@@ -1,4 +1,4 @@
-package com.example.buildnote
+package com.example.buildnote.views
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -15,7 +15,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-
+import com.example.buildnote.model.RoomEntry
+import com.example.buildnote.model.AreaEntry
+import com.example.buildnote.model.LengthEntry
+import com.example.buildnote.viewmodel.AppointmentViewModel
 private val Orange = Color(0xFFFFA500)
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -101,7 +104,18 @@ fun CreateMeasurementScreen(
                             when (option) {
                                 "Länge"  -> vm.addLengthEntry(LengthEntry("", null, false, null))
                                 "Fläche" -> vm.addAreaEntry(AreaEntry("", null, null, false, null, null))
-                                "Raum"   -> vm.addRoomEntry(RoomEntry("", null, null, null, false, null, null, null))
+                                "Raum"   -> vm.addRoomEntry(
+                                    RoomEntry(
+                                        "",
+                                        null,
+                                        null,
+                                        null,
+                                        false,
+                                        null,
+                                        null,
+                                        null
+                                    )
+                                )
                             }
                         }
                     )

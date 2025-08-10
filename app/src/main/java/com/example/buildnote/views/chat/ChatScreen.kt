@@ -1,4 +1,4 @@
-package com.example.buildnote
+package com.example.buildnote.views.chat
 
 import android.content.ContentValues
 import android.content.Context
@@ -7,7 +7,6 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,10 +24,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.buildnote.model.Project
+import com.example.buildnote.viewmodel.AppointmentViewModel
+import com.example.buildnote.viewmodel.ChatViewModel
 import java.io.OutputStream
 
 private val Orange = Color(0xFFFFA500)
@@ -37,7 +40,7 @@ private val GreyBubble = Color(0xFFEFEFEF)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
-    vm: AppointmentViewModel = viewModel(),
+    vm: ChatViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -131,7 +134,7 @@ fun ChatScreen(
                     ) {
                         Text(
                             text = msg.senderName,
-                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold),
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                             color = if (msg.isMine) Orange else Color.Gray
                         )
                         if (msg.text.isNotEmpty()) {

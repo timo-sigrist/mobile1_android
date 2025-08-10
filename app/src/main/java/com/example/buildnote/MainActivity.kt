@@ -16,19 +16,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.buildnote.ui.theme.ExampleAppTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Chat
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
+import com.example.buildnote.views.LoginScreen
+import com.example.buildnote.views.navigationbar.BottomNavItem
+import com.example.buildnote.views.navigationbar.BottomNavigationBar
+import com.example.buildnote.views.navigationbar.CustomTopBar
 
 
 class MainActivity : ComponentActivity() {

@@ -6,18 +6,24 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.buildnote.ProjectSelectionScreen
-import com.example.buildnote.ProjectDetailsScreen
-import com.example.buildnote.MaterialListScreen
-import com.example.buildnote.AddMaterialScreen
-import com.example.buildnote.CreateMeasurementScreen
-import com.example.buildnote.ZeiterfassungScreen
-import com.example.buildnote.ZeitNachtragenScreen
-import com.example.buildnote.DokumenteScreen
-import com.example.buildnote.AppointmentDetailsScreen
-import com.example.buildnote.StatusSettings
-import com.example.buildnote.StatusRequestScreen
-import com.example.buildnote.ChatScreen
+import com.example.buildnote.viewmodel.AppointmentViewModel
+import com.example.buildnote.viewmodel.ChatViewModel
+import com.example.buildnote.viewmodel.MaterialViewModel
+import com.example.buildnote.viewmodel.ProjectViewModel
+import com.example.buildnote.views.AddMaterialScreen
+import com.example.buildnote.views.AppointmentDetailsScreen
+import com.example.buildnote.views.chat.ChatScreen
+import com.example.buildnote.views.CreateMeasurementScreen
+import com.example.buildnote.views.DokumenteScreen
+import com.example.buildnote.views.MaterialListScreen
+import com.example.buildnote.views.OverviewScreen
+import com.example.buildnote.views.project.ProjectDetailsScreen
+import com.example.buildnote.views.project.ProjectSelectionScreen
+import com.example.buildnote.views.StatusRequestScreen
+import com.example.buildnote.views.StatusSettings
+import com.example.buildnote.views.ZeitNachtragenScreen
+import com.example.buildnote.views.ZeiterfassungScreen
+import com.example.buildnote.views.navigationbar.BottomNavItem
 
 private const val ROUTE_ZEIT_NACHTRAGEN = "zeit_nachtragen"
 const val ROUTE_DOCUMENTS = "documents"
@@ -25,6 +31,9 @@ const val ROUTE_DOCUMENTS = "documents"
 @Composable
 fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifier) {
     val appointmentViewModel: AppointmentViewModel = viewModel()
+    val projectViewModel: ProjectViewModel = viewModel()
+    val materialViewModel: MaterialViewModel = viewModel()
+    val chatViewModel: ChatViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -43,14 +52,14 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
         composable(BottomNavItem.Projekte.route) {
             ProjectSelectionScreen(
                 navController = navController,
-                vm = appointmentViewModel,
+                vm = projectViewModel,
                 modifier = modifier
             )
         }
         // Zeiterfassung
         composable(BottomNavItem.Zeiterfassung.route) {
             ZeiterfassungScreen(
-                vm = appointmentViewModel,
+                vm = projectViewModel,
                 navController = navController,
                 modifier = modifier
             )
@@ -58,7 +67,7 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
         // Chat (projektbasiert)
         composable(BottomNavItem.Chat.route) {
             ChatScreen(
-                vm = appointmentViewModel,
+                vm = chatViewModel,
                 modifier = modifier
             )
         }
@@ -66,7 +75,7 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
         composable(ROUTE_ZEIT_NACHTRAGEN) {
             ZeitNachtragenScreen(
                 navController = navController,
-                vm = appointmentViewModel,
+                vm = projectViewModel,
                 modifier = modifier
             )
         }

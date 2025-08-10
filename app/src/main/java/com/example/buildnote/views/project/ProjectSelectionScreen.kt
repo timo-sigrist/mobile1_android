@@ -1,4 +1,4 @@
-package com.example.buildnote
+package com.example.buildnote.views.project
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,20 +14,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.buildnote.model.ProjectSortMode
+import com.example.buildnote.viewmodel.AppointmentViewModel
+import com.example.buildnote.viewmodel.ProjectViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectSelectionScreen(
     navController: NavHostController,
-    vm: AppointmentViewModel = viewModel(),
+    vm: ProjectViewModel,
     modifier: Modifier = Modifier
 ) {
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -39,10 +44,23 @@ fun ProjectSelectionScreen(
         var sortExpanded by remember { mutableStateOf(false) }
         val sortOptions = listOf("Neueste zuerst", "Älteste zuerst", "Alphabetisch")
         val currentSort = when (vm.sortMode) {
-            AppointmentViewModel.SortMode.NEWEST_FIRST -> "Neueste zuerst"
-            AppointmentViewModel.SortMode.OLDEST_FIRST -> "Älteste zuerst"
-            AppointmentViewModel.SortMode.ALPHABETICAL -> "Alphabetisch"
+            ProjectSortMode.NEWEST_FIRST -> "Neueste zuerst"
+            ProjectSortMode.OLDEST_FIRST -> "Älteste zuerst"
+            ProjectSortMode.ALPHABETICAL -> "Alphabetisch"
         }
+
+
+        OutlinedTextField(
+            value = vm.searchQuery,
+            onValueChange = { vm.updateSearchQuery(it) },
+            leadingIcon = {
+                Icon(Icons.Default.Search, contentDescription = "Suche")
+            },
+            placeholder = { Text("Projektnamen suchen") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp)
+        )
 
         ExposedDropdownMenuBox(
             expanded = sortExpanded,
@@ -75,9 +93,9 @@ fun ProjectSelectionScreen(
                         onClick = {
                             sortExpanded = false
                             when (option) {
-                                "Neueste zuerst" -> vm.updateSortMode(AppointmentViewModel.SortMode.NEWEST_FIRST)
-                                "Älteste zuerst" -> vm.updateSortMode(AppointmentViewModel.SortMode.OLDEST_FIRST)
-                                "Alphabetisch"   -> vm.updateSortMode(AppointmentViewModel.SortMode.ALPHABETICAL)
+                                "Neueste zuerst" -> vm.updateSortMode(ProjectSortMode.NEWEST_FIRST)
+                                "Älteste zuerst" -> vm.updateSortMode(ProjectSortMode.OLDEST_FIRST)
+                                "Alphabetisch"   -> vm.updateSortMode(ProjectSortMode.ALPHABETICAL)
                             }
                         }
                     )
@@ -129,17 +147,5 @@ fun ProjectSelectionScreen(
 
         Spacer(Modifier.height(12.dp))
 
-        // Suchleiste
-        OutlinedTextField(
-            value = vm.searchQuery,
-            onValueChange = { vm.updateSearchQuery(it) },
-            leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = "Suche")
-            },
-            placeholder = { Text("Projektnamen suchen") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp)
-        )
     }
 }

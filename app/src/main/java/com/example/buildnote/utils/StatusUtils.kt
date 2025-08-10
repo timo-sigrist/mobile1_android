@@ -1,4 +1,4 @@
-package com.example.buildnote
+package com.example.buildnote.utils
 
 import java.text.SimpleDateFormat
 import java.util.Date

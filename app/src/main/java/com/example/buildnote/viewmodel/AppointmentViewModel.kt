@@ -1,4 +1,4 @@
-package com.example.buildnote
+package com.example.buildnote.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -7,97 +7,19 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import java.util.Calendar
 import android.net.Uri
-
-// Datenklassen für Kunden, Projekte, Termine, Material und Aufmaß
-
-data class Customer(
-    val id: Int,
-    val name: String,
-    val email: String,
-    val phone: String
-)
-
-data class Project(
-    val projectName: String,
-    val street: String,
-    val cityZip: String,
-    val additionalInfo: String,
-    val description: String,
-    val createdAt: Long = System.currentTimeMillis(),
-    val customerId: Int
-)
-
-data class Appointment(
-    val date: String,
-    val start: String,
-    val end: String,
-    val projectName: String,
-    val notes: String = ""
-)
-
-data class MaterialEntry(
-    val projectName: String,
-    val designation: String,
-    val quantity: Int,
-    val unit: String
-)
-
-data class LengthEntry(
-    val laengenbezeichnung: String,
-    val laenge: Double?,
-    val includeAbzug: Boolean,
-    val abzug: Double?
-)
-
-data class AreaEntry(
-    val flaechenbezeichnung: String,
-    val laenge: Double?,
-    val breite: Double?,
-    val includeAbzug: Boolean,
-    val abzugLaenge: Double?,
-    val abzugBreite: Double?
-)
-
-data class RoomEntry(
-    val raumbezeichnung: String,
-    val laenge: Double?,
-    val breite: Double?,
-    val hoehe: Double?,
-    val includeAbzug: Boolean,
-    val abzugLaenge: Double?,
-    val abzugBreite: Double?,
-    val abzugHoehe: Double?
-)
-
-data class NewMeasurement(
-    val aufmassBezeichnung: String,
-    val notizen: String,
-    val artAufmass: String,
-    val lengthUnit: String,
-    val areaUnit: String,
-    val roomUnit: String,
-    val lengthEntries: List<LengthEntry>,
-    val areaEntries: List<AreaEntry>,
-    val roomEntries: List<RoomEntry>
-)
-
-// Zeiterfassung-Modelle
-enum class ActionType { ARBEIT, FAHRT, PAUSE }
-
-data class TimeEntry(
-    val projectName: String,
-    val action: ActionType,
-    val start: Long,
-    val end: Long
-)
-
-data class ChatMessage(
-    val projectName: String,
-    val senderName: String,
-    val text: String = "",
-    val attachments: List<Uri> = emptyList(),
-    val isMine: Boolean
-)
+import com.example.buildnote.model.ActionType
+import com.example.buildnote.model.Appointment
+import com.example.buildnote.model.AreaEntry
+import com.example.buildnote.model.ChatMessage
+import com.example.buildnote.model.Customer
+import com.example.buildnote.model.DocumentEntry
+import com.example.buildnote.model.LengthEntry
+import com.example.buildnote.model.MaterialEntry
+import com.example.buildnote.model.NewMeasurement
+import com.example.buildnote.model.Project
+import com.example.buildnote.model.RoomEntry
+import com.example.buildnote.model.TimeEntry
+import com.example.buildnote.model.ProjectSortMode
 
 class AppointmentViewModel : ViewModel() {
 
@@ -110,7 +32,7 @@ class AppointmentViewModel : ViewModel() {
 
     // Test‑Kunden
     private val customers = listOf(
-        Customer(1, "Max Mustermann",   "max@example.com",  "+49 170 1234567"),
+        Customer(1, "Max Mustermann", "max@example.com", "+49 170 1234567"),
         Customer(2, "Erika Musterfrau", "erika@example.com", "+49 170 9876543"),
         Customer(3, "Hans Meier",       "hans@example.com",  "+49 170 5555555")
     )
@@ -118,7 +40,15 @@ class AppointmentViewModel : ViewModel() {
     // Test‑Projekte mit Kunden‑Verknüpfung
     private val projects = listOf(
         Project("Projekt Alpha",   "Musterstraße 12",   "12345 Musterstadt", "Ebene 3",    "Alpha‑Projektbeschreibung",   1713552000000, customerId = 1),
-        Project("Projekt Beta",    "Wolfsgartenstraße 27","63329 Egelsbach",   "Räume A/B",  "Beta‑Projektbeschreibung",    1713110400000, customerId = 2),
+        Project(
+            "Projekt Beta",
+            "Wolfsgartenstraße 27",
+            "63329 Egelsbach",
+            "Räume A/B",
+            "Beta‑Projektbeschreibung",
+            1713110400000,
+            customerId = 2
+        ),
         Project("Projekt Gamma",   "Teststraße 99",      "11111 Testhausen",  "",           "Gamma‑Projektbeschreibung",   1712755200000, customerId = 3),
         Project("Projekt Delta",   "Neue Straße 1",      "54321 Demo-Stadt",  "",           "Delta‑Projektbeschreibung",   1712500000000, customerId = 1),
         Project("Projekt Epsilon", "Hauptweg 8",         "22222 Epsilonia",   "2. OG",      "Epsilon‑Projektbeschreibung", 1712650000000, customerId = 2),
@@ -133,7 +63,7 @@ class AppointmentViewModel : ViewModel() {
     private val _materialEntries = mutableStateListOf(
         MaterialEntry("Projekt Alpha", "Putz",    5,   "m³"),
         MaterialEntry("Projekt Beta",  "Ziegel", 100, "stk"),
-        MaterialEntry("Projekt Gamma", "Dämmung",20,  "m")
+        MaterialEntry("Projekt Gamma", "Dämmung", 20, "m")
     )
     val materialEntries: List<MaterialEntry> get() = _materialEntries
     private val userAddedEntries = mutableListOf<MaterialEntry>()
@@ -172,19 +102,6 @@ class AppointmentViewModel : ViewModel() {
     fun getCustomerForSelected(): Customer? =
         customers.firstOrNull { it.id == selectedProject?.customerId }
 
-    enum class SortMode { NEWEST_FIRST, OLDEST_FIRST, ALPHABETICAL }
-    var searchQuery by mutableStateOf("")
-    var sortMode by mutableStateOf(SortMode.NEWEST_FIRST)
-    fun updateSearchQuery(q: String) { searchQuery = q }
-    fun updateSortMode(m: SortMode) { sortMode = m }
-    fun getFilteredSortedProjects(): List<Project> {
-        val f = projects.filter { it.projectName.contains(searchQuery, true) }
-        return when (sortMode) {
-            SortMode.NEWEST_FIRST -> f.sortedByDescending { it.createdAt }
-            SortMode.OLDEST_FIRST -> f.sortedBy { it.createdAt }
-            SortMode.ALPHABETICAL  -> f.sortedBy { it.projectName }
-        }
-    }
 
     // Aufmaß
     var aufmassBezeichnung by mutableStateOf("")
@@ -218,14 +135,14 @@ class AppointmentViewModel : ViewModel() {
     fun sendMeasurement() {
         val payload = NewMeasurement(
             aufmassBezeichnung = aufmassBezeichnung,
-            notizen            = notizen,
-            artAufmass         = artAufmass,
-            lengthUnit         = lengthUnit,
-            areaUnit           = areaUnit,
-            roomUnit           = roomUnit,
-            lengthEntries      = lengthEntries.toList(),
-            areaEntries        = areaEntries.toList(),
-            roomEntries        = roomEntries.toList()
+            notizen = notizen,
+            artAufmass = artAufmass,
+            lengthUnit = lengthUnit,
+            areaUnit = areaUnit,
+            roomUnit = roomUnit,
+            lengthEntries = lengthEntries.toList(),
+            areaEntries = areaEntries.toList(),
+            roomEntries = roomEntries.toList()
         )
         // TODO: HTTP call
     }
@@ -250,9 +167,9 @@ class AppointmentViewModel : ViewModel() {
                 _timeEntries.add(
                     TimeEntry(
                         projectName = timeTrackingProject!!.projectName,
-                        action      = timeTrackingAction,
-                        start       = timerStartTimestamp,
-                        end         = now
+                        action = timeTrackingAction,
+                        start = timerStartTimestamp,
+                        end = now
                     )
                 )
             }
@@ -268,9 +185,9 @@ class AppointmentViewModel : ViewModel() {
                 _timeEntries.add(
                     TimeEntry(
                         projectName = timeTrackingProject!!.projectName,
-                        action      = timeTrackingAction,
-                        start       = timerStartTimestamp,
-                        end         = now
+                        action = timeTrackingAction,
+                        start = timerStartTimestamp,
+                        end = now
                     )
                 )
             }
@@ -286,9 +203,9 @@ class AppointmentViewModel : ViewModel() {
                 _timeEntries.add(
                     TimeEntry(
                         projectName = timeTrackingProject!!.projectName,
-                        action      = timeTrackingAction,
-                        start       = timerStartTimestamp,
-                        end         = now
+                        action = timeTrackingAction,
+                        start = timerStartTimestamp,
+                        end = now
                     )
                 )
             }
@@ -370,11 +287,6 @@ class AppointmentViewModel : ViewModel() {
 
 
 
-    data class DocumentEntry(
-        val projectName: String,
-        val name: String,
-        val uri: Uri
-    )
 
 // … in class AppointmentViewModel :
 

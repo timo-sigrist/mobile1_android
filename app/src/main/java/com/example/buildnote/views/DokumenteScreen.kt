@@ -1,9 +1,9 @@
-package com.example.buildnote
+package com.example.buildnote.views
 
+import android.app.Activity
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,11 +23,11 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import android.content.Intent
+import com.example.buildnote.viewmodel.AppointmentViewModel
 
 
 private val Orange = Color(0xFFFFA500)
 
-data class DocumentEntry(val name: String, val uri: Uri)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,7 +36,7 @@ fun DokumenteScreen(
     vm: AppointmentViewModel,
     modifier: Modifier = Modifier
 ) {
-    // Projekt muss in den Details gesetzt worden sein
+    // Projekt muss in den Details changeset worden sein
     val projectName = vm.selectedProject?.projectName ?: return
 
     // alle vorhandenen Dokumente
@@ -46,7 +46,7 @@ fun DokumenteScreen(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == android.app.Activity.RESULT_OK) {
+        if (result.resultCode == Activity.RESULT_OK) {
             val intent = result.data
             val uris = mutableListOf<Uri>()
             intent?.data?.let { uris += it }
@@ -162,7 +162,7 @@ fun DokumenteScreen(
                 onClick = {
                     // Chooser starten
                     val pickIntent = Intent(Intent.ACTION_GET_CONTENT).apply {
-                        type = "*/*"
+                        setType("*/*")
                         putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
                         addCategory(Intent.CATEGORY_OPENABLE)
                     }

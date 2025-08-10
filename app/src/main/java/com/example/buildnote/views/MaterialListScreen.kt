@@ -1,4 +1,4 @@
-package com.example.buildnote
+package com.example.buildnote.views
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.buildnote.viewmodel.AppointmentViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

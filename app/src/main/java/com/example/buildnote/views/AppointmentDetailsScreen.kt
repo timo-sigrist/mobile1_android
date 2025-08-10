@@ -1,4 +1,4 @@
-package com.example.buildnote
+package com.example.buildnote.views
 
 import android.content.Intent
 import android.location.Geocoder
@@ -21,11 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.buildnote.AppointmentViewModel
+import com.example.buildnote.viewmodel.AppointmentViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -160,7 +161,7 @@ fun AppointmentDetailsScreen(
                                 cameraPositionState = cameraPositionState
                             ) {
                                 Marker(
-                                    state = com.google.maps.android.compose.MarkerState(position = location!!),
+                                    state = MarkerState(position = location!!),
                                     title = project.projectName
                                 )
 

@@ -1,4 +1,4 @@
-package com.example.buildnote
+package com.example.buildnote.views
 
 import android.app.TimePickerDialog
 import androidx.compose.foundation.layout.*
@@ -18,6 +18,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.buildnote.model.ActionType
+import com.example.buildnote.viewmodel.AppointmentViewModel
+import com.example.buildnote.model.TimeEntry
+import com.example.buildnote.viewmodel.ProjectViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -27,7 +31,7 @@ private const val ROUTE_ZEIT_NACHTRAGEN = "zeit_nachtragen"
 @Composable
 fun ZeitNachtragenScreen(
     navController: NavHostController,
-    vm: AppointmentViewModel,
+    vm: ProjectViewModel,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current

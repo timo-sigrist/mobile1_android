@@ -1,5 +1,5 @@
 // ProjectDetailsScreen.kt
-package com.example.buildnote
+package com.example.buildnote.views.project
 
 import android.content.Intent
 import android.net.Uri
@@ -26,6 +26,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.buildnote.ROUTE_DOCUMENTS
+import com.example.buildnote.viewmodel.AppointmentViewModel
 import kotlinx.coroutines.delay
 
 private val Orange = Color(0xFFFFA500)
@@ -181,7 +183,7 @@ fun ProjectDetailsScreen(
             Button(
                 onClick = {
                     val intent = Intent(Intent.ACTION_DIAL).apply {
-                        data = Uri.parse("tel:${it.phone}")
+                        setData(Uri.parse("tel:${it.phone}"))
                     }
                     context.startActivity(intent)
                 },

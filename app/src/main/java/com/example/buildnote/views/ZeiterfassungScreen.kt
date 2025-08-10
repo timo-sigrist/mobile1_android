@@ -1,4 +1,4 @@
-package com.example.buildnote
+package com.example.buildnote.views
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
@@ -21,10 +21,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.buildnote.model.ActionType
+import com.example.buildnote.viewmodel.AppointmentViewModel
+import com.example.buildnote.viewmodel.ProjectViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -34,15 +38,15 @@ private const val ROUTE_ZEIT_NACHTRAGEN = "zeit_nachtragen"
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ZeiterfassungScreen(
-    vm: AppointmentViewModel = viewModel(),
     navController: NavHostController,
+    vm: ProjectViewModel,
     modifier: Modifier = Modifier
 ) {
     val timeFmt = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
     val dateFmt = remember { SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()) }
     val projects = vm.getFilteredSortedProjects()
     var projExpanded by remember { mutableStateOf(false) }
-    var projSearch   by remember { mutableStateOf("") }
+    var projSearch by remember { mutableStateOf("") }
     val filteredProjects = projects.filter {
         it.projectName.contains(projSearch, ignoreCase = true)
     }
@@ -128,7 +132,7 @@ fun ZeiterfassungScreen(
                             onClick = { vm.selectTimeAction(action) },
                             colors = ButtonDefaults.elevatedButtonColors(
                                 containerColor = if (isSelected) Color(0xFFFFA500) else Color.White,
-                                contentColor   = if (isSelected) Color.White      else Color(0xFFFFA500)
+                                contentColor = if (isSelected) Color.White else Color(0xFFFFA500)
                             ),
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.size(72.dp),
@@ -137,8 +141,8 @@ fun ZeiterfassungScreen(
                             Icon(
                                 when (action) {
                                     ActionType.ARBEIT -> Icons.Default.Build
-                                    ActionType.FAHRT  -> Icons.Default.DirectionsCar
-                                    ActionType.PAUSE  -> Icons.Default.Restaurant
+                                    ActionType.FAHRT -> Icons.Default.DirectionsCar
+                                    ActionType.PAUSE -> Icons.Default.Restaurant
                                 },
                                 contentDescription = action.name,
                                 modifier = Modifier.size(32.dp)
@@ -172,7 +176,7 @@ fun ZeiterfassungScreen(
                 Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                val running    = vm.timerRunning
+                val running = vm.timerRunning
                 val hasProject = vm.timeTrackingProject != null
                 ElevatedButton(
                     onClick = { vm.toggleTimer() },
@@ -189,14 +193,14 @@ fun ZeiterfassungScreen(
                         else
                             MaterialTheme.colorScheme.onPrimaryContainer,
                         disabledContainerColor = Color.LightGray,
-                        disabledContentColor   = Color.Gray
+                        disabledContentColor = Color.Gray
                     ),
                     modifier = Modifier.size(100.dp),
                     elevation = ButtonDefaults.elevatedButtonElevation(8.dp)
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement   = Arrangement.Center
+                        verticalArrangement = Arrangement.Center
                     ) {
                         Icon(
                             if (running) Icons.Default.Stop else Icons.Default.PlayArrow,
@@ -268,14 +272,14 @@ fun ZeiterfassungScreen(
         } else {
             items(entries) { e ->
                 val from = timeFmt.format(Date(e.start))
-                val to   = timeFmt.format(Date(e.end))
+                val to = timeFmt.format(Date(e.end))
                 val mins = ((e.end - e.start) / 60000).toInt()
-                val hrs  = mins / 60
-                val rem  = mins % 60
+                val hrs = mins / 60
+                val rem = mins % 60
 
                 Card(
                     Modifier.fillMaxWidth(),
-                    shape  = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(8.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
@@ -284,12 +288,12 @@ fun ZeiterfassungScreen(
                             .fillMaxWidth()
                             .padding(12.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment   = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 e.projectName,
-                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                fontWeight = FontWeight.Bold
                             )
                             Text(e.action.name, style = MaterialTheme.typography.bodySmall)
                             Text(
@@ -318,7 +322,7 @@ fun ZeiterfassungScreen(
                     onClick = { navController.navigate(ROUTE_ZEIT_NACHTRAGEN) },
                     shape = CircleShape,
                     containerColor = Color(0xFFFFA500),
-                    contentColor   = Color.White
+                    contentColor = Color.White
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Neue Zeit hinzufügen")
                 }

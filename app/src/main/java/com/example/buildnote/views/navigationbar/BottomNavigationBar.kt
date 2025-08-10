@@ -1,4 +1,4 @@
-package com.example.buildnote
+package com.example.buildnote.views.navigationbar
 
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Icon
