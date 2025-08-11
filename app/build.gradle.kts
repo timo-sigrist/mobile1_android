@@ -3,26 +3,20 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 
+    alias(libs.plugins.hilt.android)   // Hilt-Plugin aus dem Version Catalog
+    id("org.jetbrains.kotlin.kapt")
 }
 
-
-
-
-    // ...
-
-
-
 android {
-    namespace = "com.example.buildnote"
+    namespace = "com.buildnote.android"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.buildnote"
+        applicationId = "com.buildnote.android"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -35,73 +29,72 @@ android {
             )
         }
     }
+
+    // AGP 8.8 → Java 17 empfohlen
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
+
     buildFeatures {
         compose = true
     }
+    // Mit kotlin-compose Plugin ist composeOptions meist nicht nötig
 }
 
 dependencies {
-
+    // AndroidX / Lifecycle
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Compose (über BOM, KEINE festen Einzelversionen)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation("androidx.compose.material:material-icons-extended:1.3.0")
+    implementation(libs.androidx.activity.compose)
+    // Optional:
+    implementation(libs.androidx.material.icons.extended)
 
-    implementation ("androidx.compose.ui:ui:1.3.0")
-    implementation ("androidx.compose.foundation:foundation:1.3.0")
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation(libs.coil.compose)
 
-    implementation(libs.volley)
-    implementation ("com.beust:klaxon:5.5")
-    implementation ("androidx.compose.ui:ui:1.3.0")
-    implementation ("androidx.compose.foundation:foundation:1.3.0")
-    implementation ("androidx.compose.material3:material3:1.0.1")
-
+    // Navigation
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
-    //implementation("androidx.navigation:navigation-common:2.8.1")
+    implementation(libs.androidx.hilt.navigation.compose) // hiltViewModel()
 
-    implementation ("com.google.accompanist:accompanist-permissions:0.36.0")
+    // Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
-    implementation("androidx.work:work-runtime-ktx:2.10.0")
+    // Networking
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.moshi)
+    implementation(libs.okhttp.logging)
 
-    implementation ("io.coil-kt:coil-compose:2.3.0")
+    // Coroutines
+    implementation(libs.coroutines.android)
 
+    // Optional
+    implementation(libs.volley)
+
+    // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
 
-
-    dependencies {
-        // Google Maps Compose Integration
-        implementation ("com.google.maps.android:maps-compose:2.11.2")
-
-        // Google Play Services (Maps SDK)
-        implementation ("com.google.android.gms:play-services-maps:18.1.0")
-
-        implementation("com.squareup.retrofit2:retrofit:2.9.0")
-        implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-
-    }
-
-
-
+    // Google Map
+    implementation(libs.play.services.maps)
+    implementation(libs.maps.compose)
 }
-

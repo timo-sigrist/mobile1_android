@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ExampleApp"
+rootProject.name = "BuildNote"
 include(":app")

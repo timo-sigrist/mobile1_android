@@ -1,0 +1,3 @@
+Clean build
+./gradlew clean
+./gradlew :app:clean :app:assembleDebug --no-build-cache
