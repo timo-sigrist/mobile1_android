@@ -24,10 +24,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.buildnote.android.ROUTE_DOCUMENTS
-import com.buildnote.android.viewmodel.AppointmentViewModel
+import com.buildnote.android.viewmodel.ProjectViewModel
 import kotlinx.coroutines.delay
 
 private val Orange = Color(0xFFFFA500)
@@ -36,8 +35,8 @@ private val Orange = Color(0xFFFFA500)
 @Composable
 fun ProjectDetailsScreen(
     navController: NavHostController,
-    vm: AppointmentViewModel = viewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    vm: ProjectViewModel
 ) {
     val project = vm.selectedProject
     if (project == null) {
@@ -138,7 +137,7 @@ fun ProjectDetailsScreen(
             Column(modifier = Modifier.padding(12.dp)) {
                 Text("Projektinformationen", style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(8.dp))
-                InfoRow("Bezeichnung:", project.projectName)
+                InfoRow("Bezeichnung:", project.name)
                 Divider()
                 InfoRow("Adresse:", "${project.street}, ${project.cityZip}")
                 if (project.additionalInfo.isNotBlank()) {

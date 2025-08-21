@@ -3,8 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 
-    alias(libs.plugins.hilt.android)   // Hilt-Plugin aus dem Version Catalog
-    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -42,7 +40,6 @@ android {
     buildFeatures {
         compose = true
     }
-    // Mit kotlin-compose Plugin ist composeOptions meist nicht nötig
 }
 
 dependencies {
@@ -72,11 +69,6 @@ dependencies {
     // Navigation
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.hilt.navigation.compose) // hiltViewModel()
-
-    // Hilt
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
 
     // Networking
     implementation(libs.retrofit)

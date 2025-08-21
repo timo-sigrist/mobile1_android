@@ -1,4 +1,4 @@
-package com.buildnote.android.api.dto
+package com.buildnote.android.model
 
 data class AppointmentDto(
     val id: Long,

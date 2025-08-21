@@ -1,4 +1,4 @@
-package com.buildnote.android.views
+package com.buildnote.android.views.project
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape

@@ -13,7 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.buildnote.android.ui.theme.ExampleAppTheme
+import com.buildnote.android.ui.theme.BuildNoteAppTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 
@@ -22,25 +22,18 @@ import com.buildnote.android.views.LoginScreen
 import com.buildnote.android.views.navigationbar.BottomNavItem
 import com.buildnote.android.views.navigationbar.BottomNavigationBar
 import com.buildnote.android.views.navigationbar.CustomTopBar
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ExampleAppTheme {
-                // Login-Zustand: Setze isLoggedIn immer initial auf false, damit man sich neu einloggen muss.
+            BuildNoteAppTheme {
                 var isLoggedIn by remember { mutableStateOf(false) }
 
-
-
                 if (!isLoggedIn) {
-                    // Zeige die Login-Seite an, falls nicht eingeloggt.
                     LoginScreen(onLoginSuccess = { isLoggedIn = true })
                 } else {
-                    // Bei erfolgreichem Login: Zeige die Hauptanwendung.
                     val navController = rememberNavController()
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentRoute = navBackStackEntry?.destination?.route
@@ -50,7 +43,7 @@ class MainActivity : ComponentActivity() {
                         "projekte" -> "Projekte"
                         "zeiterfassung" -> "Zeiterfassung"
                         "zeit_nachtragen" -> "Zeit nachtragen"
-                        "documents" -> "Dokumente"         // ← hier eingefügt
+                        "documents" -> "Dokumente"
                         "chat" -> "Chat"
                         "statussettings" -> "Statusverwaltung"
                         "statusrequest" -> "Statusanfrage"
@@ -71,8 +64,6 @@ class MainActivity : ComponentActivity() {
                         else -> Icons.Filled.Home
                     }
 
-
-
                     Scaffold(
                         topBar = {
                             CustomTopBar(
@@ -85,11 +76,6 @@ class MainActivity : ComponentActivity() {
                             BottomNavigationBar(navController = navController)
                         }
                     ) { innerPadding ->
-                        // HIER:
-                        // - fillMaxSize() sorgt dafür, dass dein NavHost den gesamten
-                        //   verbleibenden Bereich einnimmt.
-                        // - padding(innerPadding) schiebt den Content genau unter die TopBar
-                        //   und genau oberhalb der BottomBar.
                         AppNavigation(
                             navController = navController,
                             modifier = Modifier

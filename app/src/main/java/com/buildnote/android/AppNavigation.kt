@@ -2,7 +2,6 @@ package com.buildnote.android
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -12,11 +11,11 @@ import com.buildnote.android.viewmodel.ChatViewModel
 import com.buildnote.android.viewmodel.MaterialViewModel
 import com.buildnote.android.viewmodel.ProjectViewModel
 import com.buildnote.android.viewmodel.SharedViewModel
-import com.buildnote.android.views.AddMaterialScreen
+import com.buildnote.android.views.project.AddMaterialScreen
 import com.buildnote.android.views.AppointmentDetailsScreen
 import com.buildnote.android.views.CreateMeasurementScreen
 import com.buildnote.android.views.DokumenteScreen
-import com.buildnote.android.views.MaterialListScreen
+import com.buildnote.android.views.project.MaterialListScreen
 import com.buildnote.android.views.OverviewScreen
 import com.buildnote.android.views.StatusRequestScreen
 import com.buildnote.android.views.StatusSettings
@@ -34,7 +33,7 @@ const val ROUTE_DOCUMENTS = "documents"
 fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifier) {
     val sharedVersion: SharedViewModel = viewModel()
     val appointmentViewModel: AppointmentViewModel = viewModel()
-    val projectViewModel: ProjectViewModel = hiltViewModel()
+    val projectViewModel: ProjectViewModel = viewModel()
     val materialViewModel: MaterialViewModel = viewModel()
     val chatViewModel: ChatViewModel = viewModel()
 
@@ -55,7 +54,8 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
         composable(BottomNavItem.Projekte.route) {
             ProjectSelectionScreen(
                 navController = navController,
-                modifier = modifier
+                modifier = modifier,
+                vm = projectViewModel
             )
         }
         // Zeiterfassung
@@ -85,8 +85,8 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
         composable("projectdetails") {
             ProjectDetailsScreen(
                 navController = navController,
-                vm = appointmentViewModel,
-                modifier = modifier
+                modifier = modifier,
+                vm = projectViewModel
             )
         }
         // Dokumente

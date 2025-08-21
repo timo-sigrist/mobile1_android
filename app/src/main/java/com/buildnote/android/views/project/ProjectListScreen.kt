@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.buildnote.android.model.ProjectSortMode
 import com.buildnote.android.viewmodel.ProjectViewModel
@@ -30,7 +29,7 @@ import java.util.Locale
 fun ProjectSelectionScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    vm: ProjectViewModel = hiltViewModel()
+    vm: ProjectViewModel
 ) {
     // Sortierung als Dropdown
     var sortExpanded by remember { mutableStateOf(false) }
@@ -129,7 +128,7 @@ fun ProjectSelectionScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = project.projectName,
+                            text = project.name,
                             style = MaterialTheme.typography.bodyLarge.copy(color = Color.White),
                             modifier = Modifier.weight(1f)
                         )

@@ -1,4 +1,4 @@
-package com.buildnote.android.api.dto
+package com.buildnote.android.model
 
 data class ProjectDto(
     val id: Long,
@@ -8,5 +8,5 @@ data class ProjectDto(
     val additionalInfo: String,
     val description: String,
     val createdAt: Long = System.currentTimeMillis(),
-    val customerId: Int
+    val customerId: Int = 0
 )
