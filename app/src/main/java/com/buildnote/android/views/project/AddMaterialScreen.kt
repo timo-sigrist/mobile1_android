@@ -10,18 +10,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.buildnote.android.model.MaterialEntry
-import com.buildnote.android.viewmodel.AppointmentViewModel
+import com.buildnote.android.model.Material
+import com.buildnote.android.viewmodel.ProjectViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMaterialScreen(
     navController: NavHostController,
-    vm: AppointmentViewModel,
+    vm: ProjectViewModel,
     modifier: Modifier = Modifier
 ) {
-    // 1) State für Eingaben
-    var designation by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
     var quantityText by remember { mutableStateOf("") }
     var unitExpanded by remember { mutableStateOf(false) }
     val unitOptions = listOf("stk","m","cm","m²","cm²","m³","cm³","liter")
@@ -34,10 +33,10 @@ fun AddMaterialScreen(
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
-            // 2) Eingabefelder untereinander
+            // Material Eingabefelder
             OutlinedTextField(
-                value = designation,
-                onValueChange = { designation = it },
+                value = name,
+                onValueChange = { name = it },
                 label = { Text("Materialbezeichnung") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -52,7 +51,7 @@ fun AddMaterialScreen(
             )
             Spacer(Modifier.height(12.dp))
 
-            // 3) Dropdown für Einheit
+            // Dropdown für Einheit
             ExposedDropdownMenuBox(
                 expanded = unitExpanded,
                 onExpandedChange = { unitExpanded = !unitExpanded }
@@ -88,16 +87,16 @@ fun AddMaterialScreen(
             }
         }
 
-        // 4) Button unten
+        // Button unten
         Button(
             onClick = {
                 val qty = quantityText.toIntOrNull() ?: 0
                 vm.addMaterialEntry(
-                    MaterialEntry(
-                        projectName = vm.selectedProject!!.projectName,
-                        designation = designation,
-                        quantity = qty,
-                        unit = selectedUnit
+                    Material(
+                        name = name,
+                        number = qty,
+                        unit = selectedUnit,
+                        projectId = vm.selectedProject!!.id
                     )
                 )
                 navController.popBackStack()

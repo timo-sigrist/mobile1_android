@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.buildnote.android.viewmodel.AppointmentViewModel
 import com.buildnote.android.viewmodel.ChatViewModel
-import com.buildnote.android.viewmodel.MaterialViewModel
 import com.buildnote.android.viewmodel.ProjectViewModel
 import com.buildnote.android.viewmodel.SharedViewModel
 import com.buildnote.android.views.project.AddMaterialScreen
@@ -34,7 +33,6 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
     val sharedVersion: SharedViewModel = viewModel()
     val appointmentViewModel: AppointmentViewModel = viewModel()
     val projectViewModel: ProjectViewModel = viewModel()
-    val materialViewModel: MaterialViewModel = viewModel()
     val chatViewModel: ChatViewModel = viewModel()
 
     NavHost(
@@ -101,16 +99,16 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
         composable("materialliste") {
             MaterialListScreen(
                 navController = navController,
-                vm = appointmentViewModel,
-                modifier = modifier
+                modifier = modifier,
+                vm = projectViewModel
             )
         }
         // Material hinzufügen
         composable("addmaterial") {
             AddMaterialScreen(
                 navController = navController,
-                vm = appointmentViewModel,
-                modifier = modifier
+                modifier = modifier,
+                vm = projectViewModel
             )
         }
         // Aufmaß erstellen

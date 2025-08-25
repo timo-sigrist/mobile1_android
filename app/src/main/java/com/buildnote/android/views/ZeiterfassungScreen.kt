@@ -10,7 +10,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.PlayArrow
@@ -20,13 +19,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.buildnote.android.model.ActionType
 import com.buildnote.android.viewmodel.AppointmentViewModel
-import com.buildnote.android.viewmodel.ProjectViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -46,7 +43,7 @@ fun ZeiterfassungScreen(
     var projExpanded by remember { mutableStateOf(false) }
     var projSearch by remember { mutableStateOf("") }
     val filteredProjects = projects.filter {
-        it.projectName.contains(projSearch, ignoreCase = true)
+        it.name.contains(projSearch, ignoreCase = true)
     }
 
     // Einträge für den gewählten Tag
@@ -66,7 +63,7 @@ fun ZeiterfassungScreen(
                 onExpandedChange = { projExpanded = it }
             ) {
                 OutlinedTextField(
-                    value = vm.timeTrackingProject?.projectName ?: "",
+                    value = vm.timeTrackingProject?.name ?: "",
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Projekt wählen") },
@@ -96,7 +93,7 @@ fun ZeiterfassungScreen(
                                     Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Text(proj.projectName, Modifier.weight(1f))
+                                    Text(proj.name, Modifier.weight(1f))
                                     Text(
                                         dateFmt.format(Date(proj.createdAt)),
                                         style = MaterialTheme.typography.labelSmall

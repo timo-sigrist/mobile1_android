@@ -21,7 +21,6 @@ import androidx.navigation.NavHostController
 import com.buildnote.android.model.ActionType
 import com.buildnote.android.model.TimeEntry
 import com.buildnote.android.viewmodel.AppointmentViewModel
-import com.buildnote.android.viewmodel.ProjectViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -43,7 +42,7 @@ fun ZeitNachtragenScreen(
     var projSearch   by remember { mutableStateOf("") }
     var selectedProj by remember { mutableStateOf(vm.timeTrackingProject) }
     val projects = vm.getFilteredSortedProjects().filter {
-        it.projectName.contains(projSearch, ignoreCase = true)
+        it.name.contains(projSearch, ignoreCase = true)
     }
 
     // Zeitfelder
@@ -67,7 +66,7 @@ fun ZeitNachtragenScreen(
                 onExpandedChange = { projExpanded = it }
             ) {
                 OutlinedTextField(
-                    value = selectedProj?.projectName ?: "",
+                    value = selectedProj?.name ?: "",
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Projekt wählen") },
@@ -94,7 +93,7 @@ fun ZeitNachtragenScreen(
                     Divider()
                     projects.forEach { proj ->
                         DropdownMenuItem(
-                            text = { Text(proj.projectName) },
+                            text = { Text(proj.name) },
                             onClick = {
                                 selectedProj = proj
                                 projExpanded = false
@@ -219,7 +218,7 @@ fun ZeitNachtragenScreen(
                             else -> {
                                 vm.addManualEntry(
                                     TimeEntry(
-                                        projectName = selectedProj!!.projectName,
+                                        projectName = selectedProj!!.name,
                                         action = selectedAction,
                                         start = startMs,
                                         end = endMs

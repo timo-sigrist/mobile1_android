@@ -10,7 +10,6 @@ import com.buildnote.android.model.Appointment
 import com.buildnote.android.model.ChatMessage
 import com.buildnote.android.model.Customer
 import com.buildnote.android.model.DocumentEntry
-import com.buildnote.android.model.MaterialEntry
 import com.buildnote.android.model.Project
 import com.buildnote.android.model.ProjectSortMode
 
@@ -79,31 +78,7 @@ class ChatViewModel : ViewModel() {
         )
     )
 
-    // Material
-    private val _materialEntries = mutableStateListOf(
-        MaterialEntry("Projekt Alpha", "Putz", 5, "m³"),
-        MaterialEntry("Projekt Beta", "Ziegel", 100, "stk"),
-        MaterialEntry("Projekt Gamma", "Dämmung", 20, "m")
-    )
-    val materialEntries: List<MaterialEntry> get() = _materialEntries
-    private val userAddedEntries = mutableListOf<MaterialEntry>()
 
-    fun getMaterialEntriesForSelectedProject(): List<MaterialEntry> =
-        selectedProject?.let { proj -> _materialEntries.filter { it.projectName == proj.projectName } }
-            ?: emptyList()
-
-    fun addMaterialEntry(entry: MaterialEntry) {
-        _materialEntries.add(entry)
-        userAddedEntries.add(entry)
-    }
-
-    fun undoLastMaterialEntry() {
-        selectedProject?.let { proj ->
-            val last = userAddedEntries.lastOrNull { it.projectName == proj.projectName } ?: return
-            _materialEntries.remove(last)
-            userAddedEntries.remove(last)
-        }
-    }
 
     // Auswahl‑State
     var selectedAppointment: Appointment? by mutableStateOf(null); private set
@@ -117,7 +92,7 @@ class ChatViewModel : ViewModel() {
     fun setShowGreeting(v: Boolean) { _showGreeting = v }
 
     fun getProjectFor(appt: Appointment): Project? =
-        projects.firstOrNull { it.projectName == appt.projectName }
+        projects.firstOrNull { it.name == appt.projectName }
 
     fun getCustomerForSelected(): Customer? =
         customers.firstOrNull { it.id == selectedProject?.customerId }
@@ -128,7 +103,7 @@ class ChatViewModel : ViewModel() {
         return when (sortMode) {
             ProjectSortMode.NEWEST_FIRST -> projects.sortedByDescending { it.createdAt }
             ProjectSortMode.OLDEST_FIRST -> projects.sortedBy { it.createdAt }
-            ProjectSortMode.ALPHABETICAL -> projects.sortedBy { it.projectName }
+            ProjectSortMode.ALPHABETICAL -> projects.sortedBy { it.name }
         }
     }
 

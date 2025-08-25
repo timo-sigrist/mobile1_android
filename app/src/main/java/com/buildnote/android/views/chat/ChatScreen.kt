@@ -51,7 +51,7 @@ fun ChatScreen(
     var selectedProject by remember { mutableStateOf<Project?>(null) }
     val allProjects = vm.getFilteredSortedProjects()
     val filtered = allProjects.filter {
-        it.projectName.contains(projSearch, ignoreCase = true)
+        it.name.contains(projSearch, ignoreCase = true)
     }
 
     Column(modifier.padding(16.dp)) {
@@ -60,7 +60,7 @@ fun ChatScreen(
             onExpandedChange = { projExpanded = it }
         ) {
             OutlinedTextField(
-                value = selectedProject?.projectName ?: "",
+                value = selectedProject?.name ?: "",
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Projekt wählen") },
@@ -85,7 +85,7 @@ fun ChatScreen(
                 Divider()
                 filtered.forEach { proj ->
                     DropdownMenuItem(
-                        text = { Text(proj.projectName) },
+                        text = { Text(proj.name) },
                         onClick = {
                             selectedProject = proj
                             projExpanded = false
@@ -119,7 +119,7 @@ fun ChatScreen(
         }
 
         // Chat-Verlauf
-        val messages = vm.getMessages(project.projectName)
+        val messages = vm.getMessages(project.name)
 
         Column(modifier = Modifier.fillMaxSize()) {
             LazyColumn(
@@ -216,7 +216,7 @@ fun ChatScreen(
                     onClick = {
                         if (inputText.isNotBlank() || attachments.isNotEmpty()) {
                             vm.sendMessage(
-                                projectName = project.projectName,
+                                projectName = project.name,
                                 text = inputText,
                                 attachments = attachments.toList()
                             )

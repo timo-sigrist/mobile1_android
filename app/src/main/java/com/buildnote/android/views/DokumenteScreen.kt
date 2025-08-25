@@ -37,7 +37,7 @@ fun DokumenteScreen(
     modifier: Modifier = Modifier
 ) {
     // Projekt muss in den Details changeset worden sein
-    val projectName = vm.selectedProject?.projectName ?: return
+    val projectName = vm.selectedProject?.name ?: return
 
     // alle vorhandenen Dokumente
     val docs by remember { derivedStateOf { vm.getDocumentsForProject(projectName) } }

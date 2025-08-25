@@ -10,49 +10,59 @@ import androidx.compose.runtime.setValue
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import com.buildnote.android.model.ProjectDto
+import com.buildnote.android.model.Project
 import com.buildnote.android.model.Appointment
 import com.buildnote.android.model.AreaEntry
 import com.buildnote.android.model.ChatMessage
 import com.buildnote.android.model.Customer
 import com.buildnote.android.model.DocumentEntry
 import com.buildnote.android.model.LengthEntry
-import com.buildnote.android.model.MaterialEntry
+import com.buildnote.android.model.Material
 import com.buildnote.android.model.NewMeasurement
 import com.buildnote.android.model.ProjectSortMode
 import com.buildnote.android.model.RoomEntry
+import com.buildnote.android.service.MaterialService
 import com.buildnote.android.service.ProjectService
 
 
 @SuppressLint("NewApi")
 class ProjectViewModel(application: Application): AndroidViewModel(application) {
 
+    // Project selection
     private val context = getApplication<Application>().applicationContext
-    private var service: ProjectService? = null
-    //
-    private var projects: List<ProjectDto> = emptyList()
-    var selectedProject: ProjectDto? by mutableStateOf(null); private set
+    private var projectService: ProjectService? = null
+    private var materialService: MaterialService? = null
+
+    private var _projects: List<Project> = emptyList() // veränderbar nur im ViewModel
+    val projects: List<Project> = _projects // unveränderbar (read-only) für die UI.
+    var selectedProject: Project? by mutableStateOf(null)
     var searchQuery by mutableStateOf("")
     var sortMode by mutableStateOf(ProjectSortMode.NEWEST_FIRST)
+
+
+    // Material Screen
+    private var _materials: List<Material> = emptyList()
+    val materials: List<Material> get() = _materials
 
     init {
         initService(context)
         loadProjects()
     }
-
     fun initService(context: Context) {
-        service = ProjectService.create(context)
+        projectService = ProjectService.create(context)
+        materialService = MaterialService.create(context)
     }
 
+    //---------------------------------      Project    ----------------------------------------------
     fun loadProjects() {
-        service?.getProjects(
-            onResult = { list -> projects = list },
+        projectService?.getProjects(
+            onResult = { list -> _projects = list },
             onError = { e -> Log.e("Error on load projecsts", e.message.orEmpty()) }
         )
     }
 
-    fun getFilteredSortedProjects(): List<ProjectDto> {
-        val f = projects.filter { it.name.contains(searchQuery, true) }
+    fun getFilteredSortedProjects(): List<Project> {
+        val f = _projects.filter { it.name.contains(searchQuery, true) }
         return when (sortMode) {
             ProjectSortMode.NEWEST_FIRST -> f.sortedByDescending { it.createdAt }
             ProjectSortMode.OLDEST_FIRST -> f.sortedBy { it.createdAt }
@@ -60,7 +70,16 @@ class ProjectViewModel(application: Application): AndroidViewModel(application) 
         }
     }
 
-    fun selectProject(proj: ProjectDto) { selectedProject = proj }
+    fun selectProject(proj: Project) {
+        if (proj.id >= 0) {
+            selectedProject = proj
+            materialService?.getMaterialForProject(proj.id,
+                onResult = { list -> _materials = list },
+                onError = { e -> Log.e("Error on load materials for project ${proj.id}", e.message.orEmpty())})
+        } else {
+            Log.e("Error", "No id found for selected project")
+        }
+    }
 
     fun updateSearchQuery(q: String) { searchQuery = q }
     fun updateSortMode(updatedSortMode: ProjectSortMode) { sortMode = updatedSortMode }
@@ -69,34 +88,26 @@ class ProjectViewModel(application: Application): AndroidViewModel(application) 
     fun getCustomerForSelected(): Customer? =
         Customer(1, "Max Mustermann", "max@example.com", "+49 170 1234567")
 
-    // Material
-    private val _materialEntries = mutableStateListOf(
-        MaterialEntry("Projekt Alpha", "Putz", 5, "m³"),
-        MaterialEntry("Projekt Beta", "Ziegel", 100, "stk"),
-        MaterialEntry("Projekt Gamma", "Dämmung", 20, "m")
-    )
-    val materialEntries: List<MaterialEntry> get() = _materialEntries
-    private val userAddedEntries = mutableListOf<MaterialEntry>()
+    //---------------------------------      Material  ----------------------------------------------
+    private val userAddedEntries = mutableListOf<Material>()
 
-    fun getMaterialEntriesForSelectedProject(): List<MaterialEntry> =
-        selectedProject?.let { proj -> _materialEntries.filter { it.projectName == proj.name } }
-            ?: emptyList()
-
-    fun addMaterialEntry(entry: MaterialEntry) {
-        _materialEntries.add(entry)
-        userAddedEntries.add(entry)
+    fun addMaterialEntry(materialEntry: Material) {
+        materialService?.postMaterial(
+            material = materialEntry,
+            onResult = { saved -> _materials = _materials + saved },
+            onError = { e -> Log.e("Error to create material", e.message.orEmpty())}
+        )
     }
 
     fun undoLastMaterialEntry() {
         selectedProject?.let { proj ->
-            val last = userAddedEntries.lastOrNull { it.projectName == proj.name } ?: return
-            _materialEntries.remove(last)
+            val last = userAddedEntries.lastOrNull { it.name == proj.name } ?: return
             userAddedEntries.remove(last)
         }
     }
 
-    fun getProjectFor(appt: Appointment): ProjectDto? =
-        projects.firstOrNull { it.name == appt.projectName }
+    fun getProjectFor(appt: Appointment): Project? =
+        _projects.firstOrNull { it.name == appt.projectName }
 
     // Aufmaß
     var aufmassBezeichnung by mutableStateOf("")

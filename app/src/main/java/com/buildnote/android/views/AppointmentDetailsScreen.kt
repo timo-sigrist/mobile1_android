@@ -162,7 +162,7 @@ fun AppointmentDetailsScreen(
                             ) {
                                 Marker(
                                     state = MarkerState(position = location!!),
-                                    title = project.projectName
+                                    title = project.name
                                 )
 
                             }

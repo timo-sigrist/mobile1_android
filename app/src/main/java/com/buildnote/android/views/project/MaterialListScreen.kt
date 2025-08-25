@@ -19,15 +19,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.buildnote.android.viewmodel.AppointmentViewModel
+import com.buildnote.android.viewmodel.ProjectViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MaterialListScreen(
     navController: NavHostController,
-    vm: AppointmentViewModel = viewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    vm: ProjectViewModel
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize().padding(top = 16.dp)) {
         // --- Header mit zentriertem Titel und rechts ankertem Aktionen-Menü ---
         var menuExpanded by remember { mutableStateOf(false) }
         Box(
@@ -116,7 +117,8 @@ fun MaterialListScreen(
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(vm.getMaterialEntriesForSelectedProject()) { entry ->
+                    items(vm.materials) { entry ->
+                        // Material Entry
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(8.dp),
@@ -129,13 +131,13 @@ fun MaterialListScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    entry.designation,
+                                    entry.name,
                                     modifier = Modifier.weight(1.5f),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
-                                    entry.quantity.toString(),
+                                    entry.number.toString(),
                                     modifier = Modifier.weight(0.75f),
                                     textAlign = TextAlign.Center,
                                     maxLines = 1,
