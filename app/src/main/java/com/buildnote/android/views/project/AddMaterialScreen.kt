@@ -37,7 +37,7 @@ fun AddMaterialScreen(
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Bssezeichnung") },
+                label = { Text("Bezeichnung") },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(Modifier.height(12.dp))
