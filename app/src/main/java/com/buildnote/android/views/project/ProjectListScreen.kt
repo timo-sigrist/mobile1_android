@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.buildnote.android.AppRoute
 import com.buildnote.android.model.ProjectSortMode
 import com.buildnote.android.viewmodel.ProjectViewModel
 import java.text.SimpleDateFormat
@@ -115,7 +116,7 @@ fun ProjectSelectionScreen(
                         .fillMaxWidth()
                         .clickable {
                             vm.selectProject(project)
-                            navController.navigate("projectdetails")
+                            navController.navigate(AppRoute.PROJECT_DETAILS.route)
                         },
                     shape = RoundedCornerShape(12.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),

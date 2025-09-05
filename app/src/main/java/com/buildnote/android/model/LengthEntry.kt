@@ -1,8 +1,8 @@
 package com.buildnote.android.model
 
 data class LengthEntry(
-    val laengenbezeichnung: String,
-    val laenge: Double?,
-    val includeAbzug: Boolean,
-    val abzug: Double?
+    val description: String,
+    val length: Double?,
+    val includeDeduction: Boolean,
+    val deductionLength: Double?
 )

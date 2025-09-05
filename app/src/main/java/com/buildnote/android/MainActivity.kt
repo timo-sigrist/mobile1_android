@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Home
 
 import androidx.compose.ui.Modifier
 import com.buildnote.android.views.LoginScreen
-import com.buildnote.android.views.navigationbar.BottomNavItem
 import com.buildnote.android.views.navigationbar.BottomNavigationBar
 import com.buildnote.android.views.navigationbar.CustomTopBar
 
@@ -36,33 +35,9 @@ class MainActivity : ComponentActivity() {
                 } else {
                     val navController = rememberNavController()
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
-                    val currentRoute = navBackStackEntry?.destination?.route
-
-                    val currentTitle = when (currentRoute) {
-                        "overview" -> "Übersicht"
-                        "projekte" -> "Projekte"
-                        "zeiterfassung" -> "Zeiterfassung"
-                        "zeit_nachtragen" -> "Zeit nachtragen"
-                        "documents" -> "Dokumente"
-                        "chat" -> "Chat"
-                        "statussettings" -> "Statusverwaltung"
-                        "statusrequest" -> "Statusanfrage"
-                        "appointmentdetails" -> "Termindetails"
-                        "projectdetails" -> "Projektkartei"
-                        "materialliste" -> "Materialliste"
-                        "addmaterial" -> "Material hinzufügen"
-                        "createMeasurement" -> "Aufmaß"
-                        else -> "BuildNote"
-                    }
-
-
-                    val currentIcon = when (currentRoute) {
-                        "overview" -> BottomNavItem.Overview.icon
-                        "projekte" -> BottomNavItem.Projekte.icon
-                        "zeiterfassung" -> BottomNavItem.Zeiterfassung.icon
-                        "chat" -> BottomNavItem.Chat.icon
-                        else -> Icons.Filled.Home
-                    }
+                    val currentRoute = AppRoute.fromRoute(navBackStackEntry?.destination?.route ?: "")
+                    val currentTitle = currentRoute?.title ?: "Buildnote"
+                    val currentIcon = currentRoute?.icon ?: Icons.Filled.Home
 
                     Scaffold(
                         topBar = {

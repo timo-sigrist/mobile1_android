@@ -3,11 +3,16 @@ package com.buildnote.android.ui.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwitchColors
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
@@ -31,6 +36,7 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
+val Orange = Color(0xFFFFA500)
 
 @Composable
 fun BuildNoteAppTheme(
@@ -54,4 +60,19 @@ fun BuildNoteAppTheme(
         typography = Typography,
         content = content
     )
+
 }
+
+// z. B. in Theme.kt oder UiColors.kt
+@Composable
+fun buildNoteTextFieldColors(): TextFieldColors = TextFieldDefaults.colors(
+    focusedIndicatorColor = Orange,
+    focusedLabelColor = Orange,
+    cursorColor = Orange
+)
+
+@Composable
+fun buildNoteSwitchColors(): SwitchColors = SwitchDefaults.colors(
+    checkedThumbColor = Orange,
+    checkedTrackColor = Orange
+)

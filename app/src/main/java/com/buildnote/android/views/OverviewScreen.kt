@@ -40,6 +40,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import androidx.navigation.NavController
+import com.buildnote.android.AppRoute
 import com.buildnote.android.utils.StatusUpdate
 import com.buildnote.android.utils.getTodaysUpdate
 import com.buildnote.android.viewmodel.AppointmentViewModel
@@ -166,7 +167,7 @@ fun OverviewScreen(
                                 .background(Color(0xFFFFE0B2), RoundedCornerShape(8.dp))
                                 .clickable {
                                     vm.selectAppointment(appt)
-                                    navController.navigate("appointmentdetails")
+                                    navController.navigate(AppRoute.APPOINTMENT_DETAILS.route)
                                 }
                                 .padding(8.dp)
                         ) {
@@ -242,7 +243,7 @@ fun OverviewScreen(
                     contentDescription = "Verwaltung",
                     tint = Color(0xFF757575),
                     modifier = Modifier
-                        .clickable { navController.navigate("statussettings") }
+                        .clickable { navController.navigate(AppRoute.STATUS_SETTINGS.route) }
                         .size(28.dp)
                 )
             }

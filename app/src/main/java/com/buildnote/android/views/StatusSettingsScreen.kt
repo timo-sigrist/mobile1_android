@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import androidx.navigation.NavController
+import com.buildnote.android.AppRoute
 import com.buildnote.android.utils.StatusUpdate
 import com.buildnote.android.utils.getTodaysUpdate
 
@@ -186,7 +187,7 @@ fun StatusSettings(
                     .size(28.dp)
                     .clickable {
                         // Beispiel: Navigiere zu einer Seite zum Erstellen einer neuen Statusanfrage
-                        navController.navigate("statusrequest")
+                        navController.navigate(AppRoute.STATUS_REQUEST.route)
                     }
             )
 

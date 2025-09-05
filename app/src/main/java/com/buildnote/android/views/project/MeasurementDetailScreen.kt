@@ -1,4 +1,4 @@
-package com.buildnote.android.views
+package com.buildnote.android.views.project
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -15,24 +15,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.buildnote.android.model.AreaEntry
+import com.buildnote.android.model.AreaUnit
 import com.buildnote.android.model.LengthEntry
-import com.buildnote.android.model.RoomEntry
-import com.buildnote.android.viewmodel.AppointmentViewModel
+import com.buildnote.android.model.LengthUnit
+import com.buildnote.android.model.MeasurementType
+import com.buildnote.android.model.RoomUnit
+import com.buildnote.android.ui.theme.Orange
+import com.buildnote.android.ui.theme.buildNoteSwitchColors
+import com.buildnote.android.ui.theme.buildNoteTextFieldColors
+import com.buildnote.android.viewmodel.ProjectViewModel
 
-private val Orange = Color(0xFFFFA500)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateMeasurementScreen(
     navController: NavHostController,
-    vm: AppointmentViewModel,
+    vm: ProjectViewModel,
     modifier: Modifier = Modifier
 ) {
-    val lengthUnits = listOf("m", "cm", "mm", "km")
-    val areaUnits   = listOf("m²", "cm²", "km²")
-    val roomUnits   = listOf("m³", "cm³", "km³")
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -41,29 +41,21 @@ fun CreateMeasurementScreen(
     ) {
         // 1) Aufmaßbezeichnung
         OutlinedTextField(
-            value = vm.aufmassBezeichnung,
-            onValueChange = { vm.aufmassBezeichnung = it },
+            value = vm.selectedMeasurement!!.name,
+            onValueChange = { vm.selectedMeasurement = vm.selectedMeasurement?.copy(name = it) },
             label = { Text("Aufmaßbezeichnung") },
             modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Orange,   // statt focusedIndicatorColor
-                focusedLabelColor = Orange,
-                cursorColor = Orange
-            )
+            colors = buildNoteTextFieldColors()
         )
         Spacer(Modifier.height(12.dp))
 
         // 2) Notizen
         OutlinedTextField(
-            value = vm.notizen,
-            onValueChange = { vm.notizen = it },
+            value = vm.selectedMeasurement!!.notes,
+            onValueChange = { vm.selectedMeasurement = vm.selectedMeasurement?.copy(notes = it) },
             label = { Text("Notizen") },
             modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Orange,
-                focusedLabelColor = Orange,
-                cursorColor = Orange
-            )
+            colors = buildNoteTextFieldColors()
         )
         Spacer(Modifier.height(16.dp))
 
@@ -74,58 +66,34 @@ fun CreateMeasurementScreen(
             onExpandedChange = { typeExpanded = it }
         ) {
             OutlinedTextField(
-                value = vm.artAufmass,
+                value = vm.selectedMeasurement!!.measurementType.displayName,
                 onValueChange = { },
                 readOnly = true,
                 label = { Text("Art des Aufmaßes") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(typeExpanded) },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor(),
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Orange,
-                    focusedLabelColor = Orange,
-                    cursorColor = Orange
-                )
+                colors = buildNoteTextFieldColors()
             )
             ExposedDropdownMenu(
                 expanded = typeExpanded,
                 onDismissRequest = { typeExpanded = false },
                 modifier = Modifier.menuAnchor()
             ) {
-                listOf("Länge", "Fläche", "Raum").forEach { option ->
+                MeasurementType.entries.forEach { option ->
                     DropdownMenuItem(
-                        text = { Text(option) },
+                        text = { Text(option.displayName) },
                         onClick = {
                             typeExpanded = false
-                            vm.artAufmass = option
-                            vm.lengthEntries.clear()
-                            vm.areaEntries.clear()
-                            vm.roomEntries.clear()
+                            vm.selectedMeasurement!!.measurementType = option
+                            vm.selectedMeasurement!!.lengthEntries.clear()
+                            vm.selectedMeasurement!!.areaEntries.clear()
+                            vm.selectedMeasurement!!.roomEntries.clear()
                             when (option) {
-                                "Länge"  -> vm.addLengthEntry(LengthEntry("", null, false, null))
-                                "Fläche" -> vm.addAreaEntry(
-                                    AreaEntry(
-                                        "",
-                                        null,
-                                        null,
-                                        false,
-                                        null,
-                                        null
-                                    )
-                                )
-                                "Raum"   -> vm.addRoomEntry(
-                                    RoomEntry(
-                                        "",
-                                        null,
-                                        null,
-                                        null,
-                                        false,
-                                        null,
-                                        null,
-                                        null
-                                    )
-                                )
+                                MeasurementType.LENGTH -> vm.addLengthEntry()
+                                MeasurementType.AREA -> vm.addAreaEntry()
+                                MeasurementType.ROOM -> vm.addRoomEntry()
                             }
                         }
                     )
@@ -136,9 +104,10 @@ fun CreateMeasurementScreen(
         Spacer(Modifier.height(16.dp))
 
         // 4) Dynamische Eingabeblöcke
-        when (vm.artAufmass) {
-            "Länge" -> {
-                vm.lengthEntries.forEachIndexed { idx, entry ->
+        when (vm.selectedMeasurement!!.measurementType) {
+            // Länge Input
+            MeasurementType.LENGTH -> {
+                vm.selectedMeasurement!!.lengthEntries.forEachIndexed { idx, entry: LengthEntry ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
@@ -146,30 +115,30 @@ fun CreateMeasurementScreen(
                     ) {
                         Column(Modifier.padding(12.dp)) {
                             OutlinedTextField(
-                                value = entry.laengenbezeichnung,
-                                onValueChange = { vm.lengthEntries[idx] = entry.copy(laengenbezeichnung = it) },
+                                value = entry.description,
+                                onValueChange = { new ->
+                                    vm.selectedMeasurement?.let { rec ->
+                                        rec.lengthEntries[idx] =
+                                            rec.lengthEntries[idx].copy(description = new)
+                                    }
+                                },
                                 label = { Text("Längenbezeichnung") },
                                 modifier = Modifier.fillMaxWidth(),
-                                colors = TextFieldDefaults.colors(
-                                    focusedIndicatorColor = Orange,
-                                    focusedLabelColor = Orange,
-                                    cursorColor = Orange
-                                )
+                                colors = buildNoteTextFieldColors()
                             )
                             Spacer(Modifier.height(8.dp))
                             OutlinedTextField(
-                                value = entry.laenge?.toString() ?: "",
-                                onValueChange = {
-                                    vm.lengthEntries[idx] = entry.copy(laenge = it.toDoubleOrNull())
+                                value = entry.length?.toString() ?: "",
+                                onValueChange = { new ->
+                                    vm.selectedMeasurement?.let { rec ->
+                                        rec.lengthEntries[idx] =
+                                            rec.lengthEntries[idx].copy(length = new.toDoubleOrNull())
+                                    }
                                 },
                                 label = { Text("Länge") },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.fillMaxWidth(),
-                                colors = TextFieldDefaults.colors(
-                                    focusedIndicatorColor = Orange,
-                                    focusedLabelColor = Orange,
-                                    cursorColor = Orange
-                                )
+                                colors = buildNoteTextFieldColors()
                             )
                             Spacer(Modifier.height(8.dp))
                             // Einheit wählen
@@ -179,30 +148,31 @@ fun CreateMeasurementScreen(
                                 onExpandedChange = { uExpanded = it }
                             ) {
                                 OutlinedTextField(
-                                    value = vm.lengthUnit,
+                                    value = vm.selectedMeasurement!!.lengthUnit.displayName,
                                     onValueChange = {},
                                     readOnly = true,
                                     label = { Text("Einheit") },
-                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(uExpanded) },
+                                    trailingIcon = {
+                                        ExposedDropdownMenuDefaults.TrailingIcon(
+                                            uExpanded
+                                        )
+                                    },
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .menuAnchor(),
-                                    colors = TextFieldDefaults.colors(
-                                        focusedIndicatorColor = Orange,
-                                        focusedLabelColor = Orange,
-                                        cursorColor = Orange
-                                    )
+                                    colors = buildNoteTextFieldColors()
                                 )
                                 ExposedDropdownMenu(
                                     expanded = uExpanded,
                                     onDismissRequest = { uExpanded = false },
                                     modifier = Modifier.menuAnchor()
                                 ) {
-                                    lengthUnits.forEach { unit ->
+                                    LengthUnit.entries.forEach { unit ->
                                         DropdownMenuItem(
-                                            text = { Text(unit) },
+                                            text = { Text(unit.displayName) },
                                             onClick = {
-                                                vm.lengthUnit = unit
+                                                vm.selectedMeasurement =
+                                                    vm.selectedMeasurement?.copy(lengthUnit = unit)
                                                 uExpanded = false
                                             }
                                         )
@@ -216,45 +186,41 @@ fun CreateMeasurementScreen(
                             ) {
                                 Text("Abzug hinzufügen", modifier = Modifier.weight(1f))
                                 Switch(
-                                    checked = entry.includeAbzug,
-                                    onCheckedChange = {
-                                        vm.lengthEntries[idx] = entry.copy(includeAbzug = it)
+                                    checked = entry.includeDeduction,
+                                    onCheckedChange = {new ->
+                                        vm.selectedMeasurement?.let { rec ->
+                                            rec.lengthEntries[idx] =
+                                                rec.lengthEntries[idx].copy(includeDeduction = new)
+                                        }
                                     },
-                                    colors = SwitchDefaults.colors(
-                                        checkedThumbColor = Orange,
-                                        checkedTrackColor = Orange
-                                    )
+                                    colors = buildNoteSwitchColors()
                                 )
                             }
-                            if (entry.includeAbzug) {
+                            if (entry.includeDeduction || (entry.deductionLength != null && entry.deductionLength > 0.0)) {
                                 Spacer(Modifier.height(8.dp))
                                 OutlinedTextField(
-                                    value = entry.abzug?.toString() ?: "",
-                                    onValueChange = {
-                                        vm.lengthEntries[idx] = entry.copy(abzug = it.toDoubleOrNull())
+                                    value = entry.deductionLength?.toString() ?: "",
+                                    onValueChange = { new ->
+                                        vm.selectedMeasurement?.let { rec ->
+                                            rec.lengthEntries[idx] =
+                                                rec.lengthEntries[idx].copy(deductionLength = new.toDoubleOrNull())
+                                        }
                                     },
                                     label = { Text("Längenabzug") },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                     modifier = Modifier.fillMaxWidth(),
-                                    colors = TextFieldDefaults.colors(
-                                        focusedIndicatorColor = Orange,
-                                        focusedLabelColor = Orange,
-                                        cursorColor = Orange
-                                    )
+                                    colors = buildNoteTextFieldColors()
                                 )
                             }
                         }
                     }
                     Spacer(Modifier.height(12.dp))
                 }
-                TextButton(onClick = { vm.addLengthEntry(LengthEntry("", null, false, null)) }) {
-                    Icon(Icons.Default.Add, contentDescription = null, tint = Orange)
-                    Spacer(Modifier.width(4.dp))
-                    Text("Aufmaßblock hinzufügen", color = Orange)
-                }
             }
-            "Fläche" -> {
-                vm.areaEntries.forEachIndexed { idx, entry ->
+
+            // Fläche Input
+            MeasurementType.AREA -> {
+                vm.selectedMeasurement!!.areaEntries.forEachIndexed { idx, entry ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
@@ -262,45 +228,44 @@ fun CreateMeasurementScreen(
                     ) {
                         Column(Modifier.padding(12.dp)) {
                             OutlinedTextField(
-                                value = entry.flaechenbezeichnung,
-                                onValueChange = { vm.areaEntries[idx] = entry.copy(flaechenbezeichnung = it) },
+                                value = entry.description,
+                                onValueChange = { new ->
+                                    vm.selectedMeasurement?.let { rec ->
+                                        rec.areaEntries[idx] =
+                                            rec.areaEntries[idx].copy(description = new)
+                                    }
+                                },
                                 label = { Text("Flächenbezeichnung") },
                                 modifier = Modifier.fillMaxWidth(),
-                                colors = TextFieldDefaults.colors(
-                                    focusedIndicatorColor = Orange,
-                                    focusedLabelColor = Orange,
-                                    cursorColor = Orange
-                                )
+                                colors = buildNoteTextFieldColors()
                             )
                             Spacer(Modifier.height(8.dp))
                             OutlinedTextField(
-                                value = entry.laenge?.toString() ?: "",
-                                onValueChange = {
-                                    vm.areaEntries[idx] = entry.copy(laenge = it.toDoubleOrNull())
+                                value = entry.length?.toString() ?: "",
+                                onValueChange = { new ->
+                                    vm.selectedMeasurement?.let { rec ->
+                                        rec.areaEntries[idx] =
+                                            rec.areaEntries[idx].copy(length = new.toDoubleOrNull())
+                                    }
                                 },
                                 label = { Text("Länge") },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.fillMaxWidth(),
-                                colors = TextFieldDefaults.colors(
-                                    focusedIndicatorColor = Orange,
-                                    focusedLabelColor = Orange,
-                                    cursorColor = Orange
-                                )
+                                colors = buildNoteTextFieldColors()
                             )
                             Spacer(Modifier.height(8.dp))
                             OutlinedTextField(
-                                value = entry.breite?.toString() ?: "",
-                                onValueChange = {
-                                    vm.areaEntries[idx] = entry.copy(breite = it.toDoubleOrNull())
+                                value = entry.width?.toString() ?: "",
+                                onValueChange = { new ->
+                                    vm.selectedMeasurement?.let { rec ->
+                                        rec.areaEntries[idx] =
+                                            rec.areaEntries[idx].copy(width = new.toDoubleOrNull())
+                                    }
                                 },
                                 label = { Text("Breite") },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.fillMaxWidth(),
-                                colors = TextFieldDefaults.colors(
-                                    focusedIndicatorColor = Orange,
-                                    focusedLabelColor = Orange,
-                                    cursorColor = Orange
-                                )
+                                colors = buildNoteTextFieldColors()
                             )
                             Spacer(Modifier.height(8.dp))
                             var u2Expanded by remember { mutableStateOf(false) }
@@ -309,30 +274,31 @@ fun CreateMeasurementScreen(
                                 onExpandedChange = { u2Expanded = it }
                             ) {
                                 OutlinedTextField(
-                                    value = vm.areaUnit,
+                                    value = vm.selectedMeasurement!!.areaUnit.displayName,
                                     onValueChange = {},
                                     readOnly = true,
                                     label = { Text("Einheit") },
-                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(u2Expanded) },
+                                    trailingIcon = {
+                                        ExposedDropdownMenuDefaults.TrailingIcon(
+                                            u2Expanded
+                                        )
+                                    },
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .menuAnchor(),
-                                    colors = TextFieldDefaults.colors(
-                                        focusedIndicatorColor = Orange,
-                                        focusedLabelColor = Orange,
-                                        cursorColor = Orange
-                                    )
+                                    colors = buildNoteTextFieldColors()
                                 )
                                 ExposedDropdownMenu(
                                     expanded = u2Expanded,
                                     onDismissRequest = { u2Expanded = false },
                                     modifier = Modifier.menuAnchor()
                                 ) {
-                                    areaUnits.forEach { unit ->
+                                    AreaUnit.entries.forEach { unit ->
                                         DropdownMenuItem(
-                                            text = { Text(unit) },
+                                            text = { Text(unit.displayName) },
                                             onClick = {
-                                                vm.areaUnit = unit
+                                                vm.selectedMeasurement =
+                                                    vm.selectedMeasurement?.copy(areaUnit = unit)
                                                 u2Expanded = false
                                             }
                                         )
@@ -346,49 +312,47 @@ fun CreateMeasurementScreen(
                             ) {
                                 Text("Abzug hinzufügen", modifier = Modifier.weight(1f))
                                 Switch(
-                                    checked = entry.includeAbzug,
-                                    onCheckedChange = {
-                                        vm.areaEntries[idx] = entry.copy(includeAbzug = it)
+                                    checked = entry.includeDeduction,
+                                    onCheckedChange = { new ->
+                                        vm.selectedMeasurement?.let { rec ->
+                                            rec.areaEntries[idx] =
+                                                rec.areaEntries[idx].copy(includeDeduction = new)
+                                        }
                                     },
-                                    colors = SwitchDefaults.colors(
-                                        checkedThumbColor = Orange,
-                                        checkedTrackColor = Orange
-                                    )
+                                    colors = buildNoteSwitchColors()
                                 )
                             }
-                            if (entry.includeAbzug) {
+                            if (entry.includeDeduction) {
                                 Spacer(Modifier.height(8.dp))
                                 Row(
                                     Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     OutlinedTextField(
-                                        value = entry.abzugLaenge?.toString() ?: "",
-                                        onValueChange = {
-                                            vm.areaEntries[idx] = entry.copy(abzugLaenge = it.toDoubleOrNull())
+                                        value = entry.deductionLength?.toString() ?: "",
+                                        onValueChange = { new ->
+                                            vm.selectedMeasurement?.let { rec ->
+                                                rec.areaEntries[idx] =
+                                                    rec.areaEntries[idx].copy(deductionLength = new.toDoubleOrNull())
+                                            }
                                         },
                                         label = { Text("Abzug Länge") },
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                         modifier = Modifier.weight(1f),
-                                        colors = TextFieldDefaults.colors(
-                                            focusedIndicatorColor = Orange,
-                                            focusedLabelColor = Orange,
-                                            cursorColor = Orange
-                                        )
+                                        colors = buildNoteTextFieldColors()
                                     )
                                     OutlinedTextField(
-                                        value = entry.abzugBreite?.toString() ?: "",
-                                        onValueChange = {
-                                            vm.areaEntries[idx] = entry.copy(abzugBreite = it.toDoubleOrNull())
+                                        value = entry.deductionWidth?.toString() ?: "",
+                                        onValueChange = { new ->
+                                            vm.selectedMeasurement?.let { rec ->
+                                                rec.areaEntries[idx] =
+                                                    rec.areaEntries[idx].copy(deductionWidth = new.toDoubleOrNull())
+                                            }
                                         },
                                         label = { Text("Abzug Breite") },
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                         modifier = Modifier.weight(1f),
-                                        colors = TextFieldDefaults.colors(
-                                            focusedIndicatorColor = Orange,
-                                            focusedLabelColor = Orange,
-                                            cursorColor = Orange
-                                        )
+                                        colors = buildNoteTextFieldColors()
                                     )
                                 }
                             }
@@ -396,14 +360,11 @@ fun CreateMeasurementScreen(
                     }
                     Spacer(Modifier.height(12.dp))
                 }
-                TextButton(onClick = { vm.addAreaEntry(AreaEntry("", null, null, false, null, null)) }) {
-                    Icon(Icons.Default.Add, contentDescription = null, tint = Orange)
-                    Spacer(Modifier.width(4.dp))
-                    Text("Aufmaßblock hinzufügen", color = Orange)
-                }
             }
-            "Raum" -> {
-                vm.roomEntries.forEachIndexed { idx, entry ->
+
+            // Raum
+            MeasurementType.ROOM -> {
+                vm.selectedMeasurement!!.roomEntries.forEachIndexed { idx, entry ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
@@ -411,62 +372,58 @@ fun CreateMeasurementScreen(
                     ) {
                         Column(Modifier.padding(12.dp)) {
                             OutlinedTextField(
-                                value = entry.raumbezeichnung,
-                                onValueChange = {
-                                    vm.roomEntries[idx] = entry.copy(raumbezeichnung = it)
+                                value = entry.description,
+                                onValueChange = {new ->
+                                    vm.selectedMeasurement?.let { rec ->
+                                        rec.roomEntries[idx] =
+                                            rec.roomEntries[idx].copy(description = new)
+                                    }
                                 },
                                 label = { Text("Raumbezeichnung") },
                                 modifier = Modifier.fillMaxWidth(),
-                                colors = TextFieldDefaults.colors(
-                                    focusedIndicatorColor = Orange,
-                                    focusedLabelColor = Orange,
-                                    cursorColor = Orange
-                                )
+                                colors = buildNoteTextFieldColors()
                             )
                             Spacer(Modifier.height(8.dp))
                             OutlinedTextField(
-                                value = entry.laenge?.toString() ?: "",
-                                onValueChange = {
-                                    vm.roomEntries[idx] = entry.copy(laenge = it.toDoubleOrNull())
+                                value = entry.length?.toString() ?: "",
+                                onValueChange = { new ->
+                                    vm.selectedMeasurement?.let { rec ->
+                                        rec.roomEntries[idx] =
+                                            rec.roomEntries[idx].copy(length = new.toDoubleOrNull())
+                                    }
                                 },
                                 label = { Text("Länge") },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.fillMaxWidth(),
-                                colors = TextFieldDefaults.colors(
-                                    focusedIndicatorColor = Orange,
-                                    focusedLabelColor = Orange,
-                                    cursorColor = Orange
-                                )
+                                colors = buildNoteTextFieldColors()
                             )
                             Spacer(Modifier.height(8.dp))
                             OutlinedTextField(
-                                value = entry.breite?.toString() ?: "",
-                                onValueChange = {
-                                    vm.roomEntries[idx] = entry.copy(breite = it.toDoubleOrNull())
+                                value = entry.width?.toString() ?: "",
+                                onValueChange = { new ->
+                                    vm.selectedMeasurement?.let { rec ->
+                                        rec.roomEntries[idx] =
+                                            rec.roomEntries[idx].copy(width = new.toDoubleOrNull())
+                                    }
                                 },
                                 label = { Text("Breite") },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.fillMaxWidth(),
-                                colors = TextFieldDefaults.colors(
-                                    focusedIndicatorColor = Orange,
-                                    focusedLabelColor = Orange,
-                                    cursorColor = Orange
-                                )
+                                colors = buildNoteTextFieldColors()
                             )
                             Spacer(Modifier.height(8.dp))
                             OutlinedTextField(
-                                value = entry.hoehe?.toString() ?: "",
-                                onValueChange = {
-                                    vm.roomEntries[idx] = entry.copy(hoehe = it.toDoubleOrNull())
+                                value = entry.height?.toString() ?: "",
+                                onValueChange = { new ->
+                                    vm.selectedMeasurement?.let { rec ->
+                                        rec.roomEntries[idx] =
+                                            rec.roomEntries[idx].copy(height = new.toDoubleOrNull())
+                                    }
                                 },
                                 label = { Text("Höhe") },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.fillMaxWidth(),
-                                colors = TextFieldDefaults.colors(
-                                    focusedIndicatorColor = Orange,
-                                    focusedLabelColor = Orange,
-                                    cursorColor = Orange
-                                )
+                                colors = buildNoteTextFieldColors()
                             )
                             Spacer(Modifier.height(8.dp))
                             var u3Expanded by remember { mutableStateOf(false) }
@@ -475,30 +432,31 @@ fun CreateMeasurementScreen(
                                 onExpandedChange = { u3Expanded = it }
                             ) {
                                 OutlinedTextField(
-                                    value = vm.roomUnit,
+                                    value = vm.selectedMeasurement!!.roomUnit.displayName,
                                     onValueChange = {},
                                     readOnly = true,
                                     label = { Text("Einheit") },
-                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(u3Expanded) },
+                                    trailingIcon = {
+                                        ExposedDropdownMenuDefaults.TrailingIcon(
+                                            u3Expanded
+                                        )
+                                    },
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .menuAnchor(),
-                                    colors = TextFieldDefaults.colors(
-                                        focusedIndicatorColor = Orange,
-                                        focusedLabelColor = Orange,
-                                        cursorColor = Orange
-                                    )
+                                    colors = buildNoteTextFieldColors()
                                 )
                                 ExposedDropdownMenu(
                                     expanded = u3Expanded,
                                     onDismissRequest = { u3Expanded = false },
                                     modifier = Modifier.menuAnchor()
                                 ) {
-                                    roomUnits.forEach { unit ->
+                                    RoomUnit.entries.forEach { unit ->
                                         DropdownMenuItem(
-                                            text = { Text(unit) },
+                                            text = { Text(unit.displayName) },
                                             onClick = {
-                                                vm.roomUnit = unit
+                                                vm.selectedMeasurement =
+                                                    vm.selectedMeasurement?.copy(roomUnit = unit)
                                                 u3Expanded = false
                                             }
                                         )
@@ -512,49 +470,60 @@ fun CreateMeasurementScreen(
                             ) {
                                 Text("Abzug hinzufügen", modifier = Modifier.weight(1f))
                                 Switch(
-                                    checked = entry.includeAbzug,
-                                    onCheckedChange = {
-                                        vm.roomEntries[idx] = entry.copy(includeAbzug = it)
+                                    checked = entry.includeDeduction,
+                                    onCheckedChange = {new ->
+                                        vm.selectedMeasurement?.let { rec ->
+                                            rec.roomEntries[idx] =
+                                                rec.roomEntries[idx].copy(includeDeduction = new)
+                                        }
                                     },
-                                    colors = SwitchDefaults.colors(
-                                        checkedThumbColor = Orange,
-                                        checkedTrackColor = Orange
-                                    )
+                                    colors = buildNoteSwitchColors()
                                 )
                             }
-                            if (entry.includeAbzug) {
+                            if (entry.includeDeduction) {
                                 Spacer(Modifier.height(8.dp))
                                 Row(
                                     Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     OutlinedTextField(
-                                        value = entry.abzugLaenge?.toString() ?: "",
-                                        onValueChange = {
-                                            vm.roomEntries[idx] = entry.copy(abzugLaenge = it.toDoubleOrNull())
+                                        value = entry.deductionLength?.toString() ?: "",
+                                        onValueChange = { new ->
+                                            vm.selectedMeasurement?.let { rec ->
+                                                rec.roomEntries[idx] =
+                                                    rec.roomEntries[idx].copy(deductionLength = new.toDoubleOrNull())
+                                            }
                                         },
                                         label = { Text("Abzug Länge") },
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                         modifier = Modifier.weight(1f),
-                                        colors = TextFieldDefaults.colors(
-                                            focusedIndicatorColor = Orange,
-                                            focusedLabelColor = Orange,
-                                            cursorColor = Orange
-                                        )
+                                        colors = buildNoteTextFieldColors()
                                     )
                                     OutlinedTextField(
-                                        value = entry.abzugBreite?.toString() ?: "",
-                                        onValueChange = {
-                                            vm.roomEntries[idx] = entry.copy(abzugBreite = it.toDoubleOrNull())
+                                        value = entry.deductionWidth?.toString() ?: "",
+                                        onValueChange = { new ->
+                                            vm.selectedMeasurement?.let { rec ->
+                                                rec.roomEntries[idx] =
+                                                    rec.roomEntries[idx].copy(deductionWidth = new.toDoubleOrNull())
+                                            }
                                         },
                                         label = { Text("Abzug Breite") },
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                         modifier = Modifier.weight(1f),
-                                        colors = TextFieldDefaults.colors(
-                                            focusedIndicatorColor = Orange,
-                                            focusedLabelColor = Orange,
-                                            cursorColor = Orange
-                                        )
+                                        colors = buildNoteTextFieldColors()
+                                    )
+                                    OutlinedTextField(
+                                        value = entry.deductionHeight?.toString() ?: "",
+                                        onValueChange = { new ->
+                                            vm.selectedMeasurement?.let { rec ->
+                                                rec.roomEntries[idx] =
+                                                    rec.roomEntries[idx].copy(deductionHeight = new.toDoubleOrNull())
+                                            }
+                                        },
+                                        label = { Text("Abzug Höhe") },
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                        modifier = Modifier.weight(1f),
+                                        colors = buildNoteTextFieldColors()
                                     )
                                 }
                             }
@@ -562,39 +531,36 @@ fun CreateMeasurementScreen(
                     }
                     Spacer(Modifier.height(12.dp))
                 }
-                TextButton(onClick = { vm.addRoomEntry(
-                    RoomEntry(
-                        "",
-                        null,
-                        null,
-                        null,
-                        false,
-                        null,
-                        null,
-                        null
-                    )
-                ) }) {
-                    Icon(Icons.Default.Add, contentDescription = null, tint = Orange)
-                    Spacer(Modifier.width(4.dp))
-                    Text("Aufmaßblock hinzufügen", color = Orange)
-                }
+
             }
+        }
+
+        // Aufmassblock hinzufügen
+        TextButton(onClick = {
+            when(vm.selectedMeasurement!!.measurementType) {
+                MeasurementType.LENGTH -> vm.addLengthEntry()
+                MeasurementType.AREA -> vm.addAreaEntry()
+                MeasurementType.ROOM -> vm.addRoomEntry()
+            }
+
+        }) {
+            Icon(Icons.Default.Add, contentDescription = null, tint = Orange)
+            Spacer(Modifier.width(4.dp))
+            Text("Aufmaßblock hinzufügen", color = Orange)
         }
 
         Spacer(Modifier.height(24.dp))
 
-        // 5) Gesamtabmaß berechnen
-        val total = when (vm.artAufmass) {
-            "Länge"  -> vm.totalLength()
-            "Fläche" -> vm.totalArea()
-            "Raum"   -> vm.totalRoom()
-            else     -> 0.0
+        // Gesamtabmaß berechnen
+        val total = when (vm.selectedMeasurement!!.measurementType) {
+            MeasurementType.LENGTH -> vm.totalLength()
+            MeasurementType.AREA -> vm.totalArea()
+            MeasurementType.ROOM -> vm.totalRoom()
         }
-        val unit = when (vm.artAufmass) {
-            "Länge"  -> vm.lengthUnit
-            "Fläche" -> vm.areaUnit
-            "Raum"   -> vm.roomUnit
-            else     -> ""
+        val unit = when (vm.selectedMeasurement!!.measurementType) {
+            MeasurementType.LENGTH -> vm.selectedMeasurement!!.lengthUnit
+            MeasurementType.AREA -> vm.selectedMeasurement!!.areaUnit
+            MeasurementType.ROOM -> vm.selectedMeasurement!!.roomUnit
         }
         Text("Gesamtmaß: $total $unit", style = MaterialTheme.typography.titleMedium)
 

@@ -12,7 +12,7 @@ import com.buildnote.android.viewmodel.ProjectViewModel
 import com.buildnote.android.viewmodel.SharedViewModel
 import com.buildnote.android.views.project.AddMaterialScreen
 import com.buildnote.android.views.AppointmentDetailsScreen
-import com.buildnote.android.views.CreateMeasurementScreen
+import com.buildnote.android.views.project.CreateMeasurementScreen
 import com.buildnote.android.views.DokumenteScreen
 import com.buildnote.android.views.project.MaterialListScreen
 import com.buildnote.android.views.OverviewScreen
@@ -21,12 +21,10 @@ import com.buildnote.android.views.StatusSettings
 import com.buildnote.android.views.ZeitNachtragenScreen
 import com.buildnote.android.views.ZeiterfassungScreen
 import com.buildnote.android.views.chat.ChatScreen
-import com.buildnote.android.views.navigationbar.BottomNavItem
+import com.buildnote.android.views.project.MeasurementListScreen
 import com.buildnote.android.views.project.ProjectDetailsScreen
 import com.buildnote.android.views.project.ProjectSelectionScreen
-
-private const val ROUTE_ZEIT_NACHTRAGEN = "zeit_nachtragen"
-const val ROUTE_DOCUMENTS = "documents"
+import com.buildnote.android.AppRoute.*
 
 @Composable
 fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifier) {
@@ -37,11 +35,11 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
 
     NavHost(
         navController = navController,
-        startDestination = BottomNavItem.Overview.route,
+        startDestination = OVERVIEW.route,
         modifier = modifier
     ) {
         // Übersicht
-        composable(BottomNavItem.Overview.route) {
+        composable(OVERVIEW.route) {
             OverviewScreen(
                 navController = navController,
                 vm = appointmentViewModel,
@@ -49,7 +47,7 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
             )
         }
         // Projekte
-        composable(BottomNavItem.Projekte.route) {
+        composable(PROJECTS.route) {
             ProjectSelectionScreen(
                 navController = navController,
                 modifier = modifier,
@@ -57,7 +55,7 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
             )
         }
         // Zeiterfassung
-        composable(BottomNavItem.Zeiterfassung.route) {
+        composable(ZEITERFASSUNG.route) {
             ZeiterfassungScreen(
                 vm = appointmentViewModel,
                 navController = navController,
@@ -65,14 +63,14 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
             )
         }
         // Chat (projektbasiert)
-        composable(BottomNavItem.Chat.route) {
+        composable(CHAT.route) {
             ChatScreen(
                 vm = chatViewModel,
                 modifier = modifier
             )
         }
         // Neue Seite: Zeit nachtragen
-        composable(ROUTE_ZEIT_NACHTRAGEN) {
+        composable(ZEIT_NACHTRAGEN.route) {
             ZeitNachtragenScreen(
                 navController = navController,
                 vm = appointmentViewModel,
@@ -80,7 +78,7 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
             )
         }
         // Projektdetails
-        composable("projectdetails") {
+        composable(PROJECT_DETAILS.route) {
             ProjectDetailsScreen(
                 navController = navController,
                 modifier = modifier,
@@ -88,7 +86,7 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
             )
         }
         // Dokumente
-        composable(ROUTE_DOCUMENTS) {
+        composable(DOCUMENTS.route) {
             DokumenteScreen(
                 navController = navController,
                 vm = appointmentViewModel,
@@ -96,7 +94,7 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
             )
         }
         // Materialliste
-        composable("materialliste") {
+        composable(MATERIAL_LIST.route) {
             MaterialListScreen(
                 navController = navController,
                 modifier = modifier,
@@ -104,7 +102,7 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
             )
         }
         // Material hinzufügen
-        composable("addmaterial") {
+        composable(ADD_MATERIAL.route) {
             AddMaterialScreen(
                 navController = navController,
                 modifier = modifier,
@@ -112,26 +110,34 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
             )
         }
         // Aufmaß erstellen
-        composable("createMeasurement") {
+        composable(MEASUREMENT_LIST.route) {
+            MeasurementListScreen(
+                navController = navController,
+                vm = projectViewModel,
+                modifier = modifier
+            )
+        }
+        // Aufmaß erstellen
+        composable(MEASUREMENT_DETAIL.route) {
             CreateMeasurementScreen(
                 navController = navController,
-                vm = appointmentViewModel,
+                vm = projectViewModel,
                 modifier = modifier
             )
         }
         // Statusverwaltung
-        composable("statussettings") {
+        composable(STATUS_SETTINGS.route) {
             StatusSettings(
                 navController = navController,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
         // Statusanfrage
-        composable("statusrequest") {
+        composable(STATUS_REQUEST.route) {
             StatusRequestScreen(navController = navController)
         }
         // Termindetails
-        composable("appointmentdetails") {
+        composable(APPOINTMENT_DETAILS.route) {
             AppointmentDetailsScreen(
                 navController = navController,
                 vm = appointmentViewModel

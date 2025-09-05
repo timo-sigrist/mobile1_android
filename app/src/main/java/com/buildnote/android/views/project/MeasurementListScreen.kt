@@ -16,21 +16,28 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.buildnote.android.AppRoute
-import com.buildnote.android.viewmodel.AppointmentViewModel
+import com.buildnote.android.model.AreaEntry
+import com.buildnote.android.model.AreaUnit
+import com.buildnote.android.model.LengthEntry
+import com.buildnote.android.model.LengthUnit
+import com.buildnote.android.model.MeasurementRecord
+import com.buildnote.android.model.MeasurementType
+import com.buildnote.android.model.RoomEntry
+import com.buildnote.android.model.RoomUnit
 import com.buildnote.android.viewmodel.ProjectViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MaterialListScreen(
+fun MeasurementListScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     vm: ProjectViewModel
 ) {
-    Column(modifier = modifier.fillMaxSize().padding(top = 16.dp)) {
-        // --- Header mit zentriertem Titel und rechts ankertem Aktionen-Menü ---
+    Column(modifier = modifier
+        .fillMaxSize()
+        .padding(top = 16.dp)) {
         var menuExpanded by remember { mutableStateOf(false) }
         Box(
             modifier = Modifier
@@ -38,7 +45,7 @@ fun MaterialListScreen(
                 .padding(vertical = 16.dp)
         ) {
             Text(
-                text = "Materialeinträge",
+                text = "Aufmaßeinträge",
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
                 modifier = Modifier.align(Alignment.Center),
                 textAlign = TextAlign.Center
@@ -56,10 +63,9 @@ fun MaterialListScreen(
                     onDismissRequest = { menuExpanded = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Eintrag rückgängig") },
+                        text = { Text("TODO Aktion") },
                         onClick = {
-                            vm.undoLastMaterialEntry()
-                            menuExpanded = false
+                            // TODO: AKtion
                         }
                     )
                 }
@@ -103,7 +109,7 @@ fun MaterialListScreen(
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        "Einheit",
+                        "Typ",
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.End,
                         modifier = Modifier.weight(0.75f),
@@ -118,12 +124,21 @@ fun MaterialListScreen(
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(vm.materials) { entry ->
+                    items(vm.measurements) { entry ->
                         // Material Entry
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(8.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            onClick = {
+                                val m = entry
+                                vm.selectedMeasurement = m.copy(
+                                    lengthEntries = m.lengthEntries.toMutableStateList(),
+                                    areaEntries   = m.areaEntries.toMutableStateList(),
+                                    roomEntries   = m.roomEntries.toMutableStateList()
+                                )
+                                navController.navigate(AppRoute.MEASUREMENT_DETAIL.route)
+                            }
                         ) {
                             Row(
                                 modifier = Modifier
@@ -138,14 +153,14 @@ fun MaterialListScreen(
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
-                                    entry.number.toString(),
+                                    entry.total.toString(),
                                     modifier = Modifier.weight(0.75f),
                                     textAlign = TextAlign.Center,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
-                                    entry.unit,
+                                    entry.measurementType.displayName,
                                     modifier = Modifier.weight(0.75f),
                                     textAlign = TextAlign.End,
                                     maxLines = 1,
@@ -160,7 +175,22 @@ fun MaterialListScreen(
 
         // --- Button unten ---
         Button(
-            onClick = { navController.navigate(AppRoute.ADD_MATERIAL.route) },
+            onClick = {
+                vm.selectedMeasurement = MeasurementRecord(
+                    name = "",
+                    description = "",
+                    notes = "",
+                    total = 0.0,
+                    measurementType = MeasurementType.LENGTH,
+                    lengthUnit = LengthUnit.M,
+                    areaUnit = AreaUnit.M,
+                    roomUnit = RoomUnit.M,
+                    lengthEntries = mutableStateListOf(),
+                    areaEntries   = mutableStateListOf(),
+                    roomEntries   = mutableStateListOf()
+                )
+                navController.navigate(AppRoute.MEASUREMENT_DETAIL.route)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
@@ -170,7 +200,7 @@ fun MaterialListScreen(
         ) {
             Icon(Icons.Default.Add, contentDescription = "Hinzufügen")
             Spacer(Modifier.width(8.dp))
-            Text("Verwendetes Material eintragen")
+            Text("Aufmaß hinzufügen")
         }
     }
 }

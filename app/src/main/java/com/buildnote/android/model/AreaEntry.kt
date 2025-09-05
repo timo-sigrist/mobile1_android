@@ -1,10 +1,10 @@
 package com.buildnote.android.model
 
 data class AreaEntry(
-    val flaechenbezeichnung: String,
-    val laenge: Double?,
-    val breite: Double?,
-    val includeAbzug: Boolean,
-    val abzugLaenge: Double?,
-    val abzugBreite: Double?
+    val description: String,
+    val length: Double?,
+    val width: Double?,
+    val includeDeduction: Boolean,
+    val deductionLength: Double?,
+    val deductionWidth: Double?
 )

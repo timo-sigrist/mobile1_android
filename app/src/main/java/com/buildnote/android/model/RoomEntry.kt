@@ -1,12 +1,12 @@
 package com.buildnote.android.model
 
 data class RoomEntry(
-    val raumbezeichnung: String,
-    val laenge: Double?,
-    val breite: Double?,
-    val hoehe: Double?,
-    val includeAbzug: Boolean,
-    val abzugLaenge: Double?,
-    val abzugBreite: Double?,
-    val abzugHoehe: Double?
+    val description: String,
+    val length: Double?,
+    val width: Double?,
+    val height: Double?,
+    val includeDeduction: Boolean,
+    val deductionLength: Double?,
+    val deductionWidth: Double?,
+    val deductionHeight: Double?
 )

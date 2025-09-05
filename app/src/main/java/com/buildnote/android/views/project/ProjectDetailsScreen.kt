@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.buildnote.android.ROUTE_DOCUMENTS
+import com.buildnote.android.AppRoute
 import com.buildnote.android.viewmodel.ProjectViewModel
 import kotlinx.coroutines.delay
 
@@ -105,22 +106,22 @@ fun ProjectDetailsScreen(
                     modifier = Modifier.wrapContentSize(Alignment.TopStart)
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Aufmaß nehmen") },
+                        text = { Text(AppRoute.MEASUREMENT_LIST.title) },
                         onClick = {
                             menuExpanded = false
-                            navController.navigate("createMeasurement")
+                            navController.navigate(AppRoute.MEASUREMENT_LIST.route)
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Materialliste") },
+                        text = { Text(AppRoute.MATERIAL_LIST.title) },
                         onClick = {
                             menuExpanded = false
-                            navController.navigate("materialliste")
+                            navController.navigate(AppRoute.MATERIAL_LIST.route)
                         }
                     )
                     DropdownMenuItem(
                         text = { Text("Handwerker chat") },
-                        onClick = { /* TODO */ }
+                        onClick = { navController.navigate(AppRoute.CHAT.route) }
                     )
                 }
             }
@@ -170,9 +171,9 @@ fun ProjectDetailsScreen(
                     Text("Kundeninformationen", style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(8.dp))
                     InfoRow("Name:", it.name)
-                    Divider()
+                    HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
                     InfoRow("E-Mail:", it.email)
-                    Divider()
+                    HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
                     InfoRow("Telefon:", it.phone)
                 }
             }
@@ -197,7 +198,7 @@ fun ProjectDetailsScreen(
                 Text("Kunde kontaktieren", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium))
             }
 
-            // — Neuer Block: Projektdokumente —
+            // Projektdokumente
             Spacer(Modifier.height(16.dp))
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -215,7 +216,7 @@ fun ProjectDetailsScreen(
                     )
                     Spacer(Modifier.height(8.dp))
                     Button(
-                        onClick = { navController.navigate(ROUTE_DOCUMENTS) },
+                        onClick = { navController.navigate(AppRoute.DOCUMENTS.route) },
                         colors = ButtonDefaults.buttonColors(containerColor = Orange),
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     ) {
@@ -234,7 +235,7 @@ fun ProjectDetailsScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 ElevatedButton(
-                    onClick = { navController.navigate("materialliste") },
+                    onClick = { navController.navigate(AppRoute.MATERIAL_LIST.route) },
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.elevatedButtonColors(containerColor = Color.White),
                     modifier = Modifier.size(72.dp),
@@ -256,7 +257,7 @@ fun ProjectDetailsScreen(
                     }
                 }
                 ElevatedButton(
-                    onClick = { navController.navigate("createMeasurement") },
+                    onClick = { navController.navigate(AppRoute.MEASUREMENT_DETAIL.route) },
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.elevatedButtonColors(containerColor = Color.White),
                     modifier = Modifier.size(72.dp),

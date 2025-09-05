@@ -19,27 +19,20 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.ChatBubble
-
-sealed class BottomNavItem(val route: String, val title: String, val icon: ImageVector) {
-    object Overview : BottomNavItem("overview", "Übersicht", Icons.Filled.Home)
-    object Projekte : BottomNavItem("projekte", "Projekte", Icons.Filled.Business)
-    object Zeiterfassung : BottomNavItem("zeiterfassung", "Zeiterfassung", Icons.Filled.Schedule)
-    object Chat : BottomNavItem("chat", "Chat", Icons.Filled.ChatBubble)
-}
+import com.buildnote.android.AppRoute
+import com.buildnote.android.ui.theme.Orange
+import com.buildnote.android.views.OverviewScreen
 
 @Composable
 fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modifier) {
     val items = listOf(
-        BottomNavItem.Overview,
-        BottomNavItem.Projekte,
-        BottomNavItem.Zeiterfassung,
-        BottomNavItem.Chat
+        AppRoute.OVERVIEW,
+        AppRoute.PROJECTS,
+        AppRoute.ZEITERFASSUNG,
+        AppRoute.CHAT
     )
-    // Dein Orange
-    val orangeColor = Color(0xFFFFA500)
 
     NavigationBar(
-        // Wichtig: hier das Padding für die Navigationsleiste hinzufügen
         modifier = modifier
             .navigationBarsPadding(),
         containerColor = Color.White,
@@ -66,11 +59,11 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modif
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor   = orangeColor,
-                    selectedTextColor   = orangeColor,
+                    selectedIconColor   = Orange,
+                    selectedTextColor   = Orange,
                     unselectedIconColor = Color(0xFF333333),
                     unselectedTextColor = Color(0xFF333333),
-                    indicatorColor      = orangeColor.copy(alpha = 0.12f)
+                    indicatorColor      = Orange.copy(alpha = 0.12f)
                 )
             )
         }

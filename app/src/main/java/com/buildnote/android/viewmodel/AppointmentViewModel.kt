@@ -14,8 +14,7 @@ import com.buildnote.android.model.ChatMessage
 import com.buildnote.android.model.Customer
 import com.buildnote.android.model.DocumentEntry
 import com.buildnote.android.model.LengthEntry
-import com.buildnote.android.model.Material
-import com.buildnote.android.model.NewMeasurement
+import com.buildnote.android.model.MeasurementRecord
 import com.buildnote.android.model.Project
 import com.buildnote.android.model.ProjectSortMode
 import com.buildnote.android.model.RoomEntry
@@ -116,37 +115,6 @@ class AppointmentViewModel : ViewModel() {
     val areaEntries = mutableStateListOf<AreaEntry>()
     val roomEntries = mutableStateListOf<RoomEntry>()
 
-    fun addLengthEntry(e: LengthEntry) { lengthEntries += e }
-    fun addAreaEntry(e: AreaEntry)   { areaEntries += e }
-    fun addRoomEntry(e: RoomEntry)   { roomEntries += e }
-
-    fun totalLength(): Double = lengthEntries.sumOf {
-        (it.laenge ?: 0.0) - (if (it.includeAbzug) (it.abzug ?: 0.0) else 0.0)
-    }
-    fun totalArea(): Double = areaEntries.sumOf {
-        val base = (it.laenge ?: 0.0) * (it.breite ?: 0.0)
-        val abz  = if (it.includeAbzug) ((it.abzugLaenge ?: 0.0) * (it.abzugBreite ?: 0.0)) else 0.0
-        base - abz
-    }
-    fun totalRoom(): Double = roomEntries.sumOf {
-        val base = (it.laenge ?: 0.0) * (it.breite ?: 0.0) * (it.hoehe ?: 0.0)
-        val abz  = if (it.includeAbzug) ((it.abzugLaenge ?: 0.0) * (it.abzugBreite ?: 0.0) * (it.abzugHoehe ?: 0.0)) else 0.0
-        base - abz
-    }
-    fun sendMeasurement() {
-        val payload = NewMeasurement(
-            aufmassBezeichnung = aufmassBezeichnung,
-            notizen = notizen,
-            artAufmass = artAufmass,
-            lengthUnit = lengthUnit,
-            areaUnit = areaUnit,
-            roomUnit = roomUnit,
-            lengthEntries = lengthEntries.toList(),
-            areaEntries = areaEntries.toList(),
-            roomEntries = roomEntries.toList()
-        )
-        // TODO: HTTP call
-    }
 
     // ————————————
     // **Zeiterfassung mit Safe‑Entry & Mindestdauer**
