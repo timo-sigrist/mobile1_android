@@ -7,5 +7,5 @@ data class Material(
     val projectId: Long,
     val netPurchasePrice: Double = 0.0,
     val calculatedSellPrice: Double = 0.0,
-    val sectionId: Long = 0
+    val sectionId: Long = 1 // 1 = Gesamt-Sektion
 )

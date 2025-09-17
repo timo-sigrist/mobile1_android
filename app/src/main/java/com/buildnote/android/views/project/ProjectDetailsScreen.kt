@@ -160,6 +160,56 @@ fun ProjectDetailsScreen(
 
         Spacer(Modifier.height(16.dp))
 
+        Spacer(Modifier.height(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            ElevatedButton(
+                onClick = { navController.navigate(AppRoute.MATERIAL_LIST.route) },
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.elevatedButtonColors(containerColor = Color.White),
+                modifier = Modifier.size(72.dp),
+                elevation = ButtonDefaults.elevatedButtonElevation(4.dp)
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        Icons.Default.List,
+                        contentDescription = "Materialliste",
+                        tint = Orange,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        "Material\nliste",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodySmall.copy(color = Orange)
+                    )
+                }
+            }
+            ElevatedButton(
+                onClick = { navController.navigate(AppRoute.MEASUREMENT_DETAIL.route) },
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.elevatedButtonColors(containerColor = Color.White),
+                modifier = Modifier.size(72.dp),
+                elevation = ButtonDefaults.elevatedButtonElevation(4.dp)
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        Icons.Default.Straighten,
+                        contentDescription = "Aufmaß nehmen",
+                        tint = Orange,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        "Aufmaß\nnehmen",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodySmall.copy(color = Orange)
+                    )
+                }
+            }
+        }
         // Kundeninformationen + „Kunde kontaktieren“-Button
         customer?.let {
             Card(
@@ -225,58 +275,6 @@ fun ProjectDetailsScreen(
                         Text("Zu Dokumenten", color = Color.White)
                     }
 
-                }
-            }
-
-            // Zusätzliche quadratische Navigation
-            Spacer(Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                ElevatedButton(
-                    onClick = { navController.navigate(AppRoute.MATERIAL_LIST.route) },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.elevatedButtonColors(containerColor = Color.White),
-                    modifier = Modifier.size(72.dp),
-                    elevation = ButtonDefaults.elevatedButtonElevation(4.dp)
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            Icons.Default.List,
-                            contentDescription = "Materialliste",
-                            tint = Orange,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(Modifier.height(2.dp))
-                        Text(
-                            "Material\nliste",
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodySmall.copy(color = Orange)
-                        )
-                    }
-                }
-                ElevatedButton(
-                    onClick = { navController.navigate(AppRoute.MEASUREMENT_DETAIL.route) },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.elevatedButtonColors(containerColor = Color.White),
-                    modifier = Modifier.size(72.dp),
-                    elevation = ButtonDefaults.elevatedButtonElevation(4.dp)
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            Icons.Default.Straighten,
-                            contentDescription = "Aufmaß nehmen",
-                            tint = Orange,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(Modifier.height(2.dp))
-                        Text(
-                            "Aufmaß\nnehmen",
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodySmall.copy(color = Orange)
-                        )
-                    }
                 }
             }
         }

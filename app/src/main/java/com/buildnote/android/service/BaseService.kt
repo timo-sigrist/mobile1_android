@@ -9,7 +9,8 @@ abstract class BaseService protected constructor(
     protected val queue: RequestQueue
 ) {
     companion object {
-        private const val DEFAULT_URL = "https://test.buildnote.de/api"
+        //private const val DEFAULT_URL = "https://test.buildnote.de/api"
+        private const val DEFAULT_URL = "http://10.0.2.2:8443/api/"
 
         /**
          * Hilfsmethode für Subklassen, um eine Instanz zu erzeugen.
