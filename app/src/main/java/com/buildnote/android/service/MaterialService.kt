@@ -4,16 +4,13 @@ import android.content.Context
 import android.util.Log
 import com.android.volley.Request
 import com.android.volley.RequestQueue
-import com.android.volley.toolbox.JsonObjectRequest
 import com.buildnote.android.model.Material
 import com.buildnote.android.service.JsonBuildnoteParser.parseMaterials
-import org.json.JSONObject
 
-import kotlin.apply
 
 class MaterialService private constructor(
-    queue: RequestQueue,
-): BaseService(queue){
+    queue: RequestQueue
+) : BaseService(queue) {
     companion object {
         private val endpoint = "${defaultBaseUrl()}/material"
 
@@ -54,7 +51,37 @@ class MaterialService private constructor(
         onResult: (Material) -> Unit,
         onError: (Throwable) -> Unit
     ) {
-        val requestUrl = "$endpoint" // POST direkt an /material
+        val body = Json.obj(
+            "name" to material.name,
+            "number" to material.number,
+            "unit" to material.unit,
+            "projectId" to material.projectId
+        )
+
+        post(
+            endpoint = "material",
+            bodyJson = body,
+            parse = { json ->
+                Material(
+                    name = json.optString("name"),
+                    number = json.optInt("number"),
+                    unit = json.optString("unit"),
+                    projectId = json.optLong("projectId")
+                )
+            },
+            onResult = onResult,
+            onError = onError
+        )
+    }
+
+
+    /*
+    fun postMaterial(
+        material: Material,
+        onResult: (Material) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        val requestUrl = endpoint // POST direkt an /material
 
         val body = JSONObject().apply {
             put("name", material.name)
@@ -95,6 +122,8 @@ class MaterialService private constructor(
         }
 
         queue.add(request)
-    }
+    }*/
+
+
 }
 

@@ -187,7 +187,9 @@ fun MeasurementListScreen(
                     roomUnit = RoomUnit.M,
                     lengthEntries = mutableStateListOf(),
                     areaEntries   = mutableStateListOf(),
-                    roomEntries   = mutableStateListOf()
+                    roomEntries   = mutableStateListOf(),
+                    projectId = vm.selectedProject!!.id,
+                    userId = 1
                 )
                 navController.navigate(AppRoute.MEASUREMENT_DETAIL.route)
             },

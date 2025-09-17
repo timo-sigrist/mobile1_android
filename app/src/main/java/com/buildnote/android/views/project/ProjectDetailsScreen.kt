@@ -188,7 +188,7 @@ fun ProjectDetailsScreen(
                 }
             }
             ElevatedButton(
-                onClick = { navController.navigate(AppRoute.MEASUREMENT_DETAIL.route) },
+                onClick = { navController.navigate(AppRoute.MEASUREMENT_LIST.route) },
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.elevatedButtonColors(containerColor = Color.White),
                 modifier = Modifier.size(72.dp),

@@ -110,7 +110,7 @@ class ProjectViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun addMaterialEntry(materialEntry: Material) {
-        materialService?.postMaterial(
+        materialService!!.postMaterial(
             material = materialEntry,
             onResult = { saved -> _materials = _materials + saved },
             onError = { e -> Log.e("Error to create material", e.message.orEmpty()) }
@@ -203,21 +203,11 @@ class ProjectViewModel(application: Application) : AndroidViewModel(application)
     } ?: 0.0
 
     fun sendMeasurement() {
-        _measurements.add(selectedMeasurement!!)
-        /*
-        TODO: post measuerement record
-        val payload = MeasurementRecord(
-            name = name,
-            notes = notes,
-            measurementType = measurementType,
-            measurementUnit = measurementType.displayName,
-            lengthUnit = lengthUnit,
-            areaUnit = areaUnit,
-            roomUnit = roomUnit,
-            lengthEntries = lengthEntries.toList(),
-            areaEntries = areaEntries.toList(),
-            roomEntries = roomEntries.toList()
-        )*/
+        measurementService!!.postMeasurement(
+            measurement = selectedMeasurement!!,
+            onResult = { saved ->  _measurements.add(saved) },
+            onError = { e -> Log.e("Error to create measurement record", e.message.orEmpty()) }
+        )
     }
 
 

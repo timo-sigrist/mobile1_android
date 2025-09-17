@@ -181,7 +181,7 @@ object JsonBuildnoteParser : BuildnoteParser {
         }
     }
 
-    fun parseMeasurements(raw: String): List<MeasurementRecord> {
+    fun parseMeasurements(raw: String, projectId: Long): List<MeasurementRecord> {
         val text = raw.trim()
         if (text.isEmpty()) return emptyList()
 
@@ -203,7 +203,9 @@ object JsonBuildnoteParser : BuildnoteParser {
                 roomUnit = parseRoomUnit(o.optString("roomUnit")),
                 lengthEntries = lengthEntries,
                 areaEntries = areaEntries,
-                roomEntries = roomEntries
+                roomEntries = roomEntries,
+                projectId = projectId,
+                userId = 1
             )
         }
 

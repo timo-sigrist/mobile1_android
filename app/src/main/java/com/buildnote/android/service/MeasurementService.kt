@@ -5,8 +5,15 @@ import android.util.Log
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
+import com.buildnote.android.model.AreaEntry
+import com.buildnote.android.model.LengthEntry
 import com.buildnote.android.model.Material
 import com.buildnote.android.model.MeasurementRecord
+import com.buildnote.android.model.LengthUnit
+import com.buildnote.android.model.AreaUnit
+import com.buildnote.android.model.RoomUnit
+import com.buildnote.android.model.MeasurementType
+import com.buildnote.android.model.RoomEntry
 import com.buildnote.android.service.JsonBuildnoteParser.parseMeasurements
 import org.json.JSONObject
 
@@ -37,7 +44,7 @@ class MeasurementService private constructor(
             { response ->
                 Log.d("MeasurementService", "response: $response")
                 try {
-                    onResult(parseMeasurements(response).toMutableList())
+                    onResult(parseMeasurements(response, projectId).toMutableList())
                 } catch (e: Exception) {
                     onError(e)
                 }
@@ -50,52 +57,103 @@ class MeasurementService private constructor(
         queue.add(request)
     }
 
+
     fun postMeasurement(
-        material: Material,
-        onResult: (Material) -> Unit,
+        measurement: MeasurementRecord,
+        onResult: (MeasurementRecord) -> Unit,
         onError: (Throwable) -> Unit
     ) {
-        val requestUrl = "$endpoint" // POST direkt an /material
+        val body = Json.obj(
+            "name" to measurement.name,
+            "notes" to measurement.notes,
+            "total" to measurement.total,
+            "projectId" to measurement.projectId,
+            "userId" to measurement.userId
+        )
 
-        val body = JSONObject().apply {
-            put("name", material.name)
-            put("number", material.number)
-            put("unit", material.unit)
-            put("projectId", material.projectId)
-        }
+        when (measurement.measurementType) {
+            MeasurementType.LENGTH -> {
+                body.put("lengthUnit", measurement.lengthUnit)
 
-        val request = object : JsonObjectRequest(
-            Method.POST,
-            requestUrl,
-            body,
-            { response ->
-                try {
-                    // Response zurück in Material mappen
-                    val saved = Material(
-                        name = response.optString("name"),
-                        number = response.optInt("number"),
-                        unit = response.optString("unit"),
-                        projectId = response.optLong("projectId")
+                val entriesJson = measurement.lengthEntries.map { entry ->
+                    Json.obj(
+                        "description" to entry.description,
+                        "length" to entry.length,
+                        "deductionLength" to entry.deductionLength
                     )
-                    onResult(saved)
-                } catch (e: Exception) {
-                    onError(e)
-                }
-            },
-            { error ->
-                Log.e("MaterialService", "Error posting material: $error")
-                onError(error)
+                }.toJSONArray()
+
+                body.put("lengthEntries", entriesJson)
             }
-        ) {
-            override fun getHeaders(): MutableMap<String, String> {
-                return mutableMapOf(
-                    "Content-Type" to "application/json"
-                    // hier ggf. noch Auth-Header etc.
-                )
+            MeasurementType.AREA -> {
+                body.put("areaUnit", measurement.areaUnit)
+
+                val entriesJson = measurement.areaEntries.map { entry ->
+                    Json.obj(
+                        "description" to entry.description,
+                        "length" to entry.length,
+                        "width" to entry.width,
+                        "deductionLength" to entry.deductionLength,
+                        "deductionWidth" to entry.deductionWidth
+                    )
+                }.toJSONArray()
+
+                body.put("areaEntries", entriesJson)
+            }
+            MeasurementType.ROOM -> {
+                body.put("roomUnit", measurement.roomUnit)
+
+                val entriesJson = measurement.roomEntries.map { entry ->
+                    Json.obj(
+                        "description" to entry.description,
+                        "length" to entry.length,
+                        "width" to entry.width,
+                        "height" to entry.height,
+                        "deductionLength" to entry.deductionLength,
+                        "deductionWidth" to entry.deductionWidth,
+                        "deductionHeight" to entry.deductionLength
+                    )
+                }.toJSONArray()
+
+                body.put("roomEntries", entriesJson)
             }
         }
 
-        queue.add(request)
+        post(
+            endpoint = "measurement_record/create",
+            bodyJson = body,
+            parse = { json ->
+                val lengthEntries = json.optJSONArray("lengthEntries")?.toLengthEntryList() ?: mutableListOf()
+                val areaEntries   = json.optJSONArray("areaEntries")?.toAreaEntryList() ?: mutableListOf()
+                val roomEntries   = json.optJSONArray("roomEntries")?.toRoomEntryList() ?: mutableListOf()
+
+                val measurementType: MeasurementType
+                if (lengthEntries.size > 0)
+                    measurementType = MeasurementType.LENGTH
+                else if (areaEntries.size > 0)
+                    measurementType = MeasurementType.AREA
+                else
+                    measurementType = MeasurementType.ROOM
+
+                MeasurementRecord(
+                    name = json.optString("name"),
+                    description = json.optString("description"),
+                    notes = json.optString("notes"),
+                    total = json.optDouble("total", 0.0),
+                    measurementType = measurementType,
+                    lengthUnit = LengthUnit.fromString(json.optString("lengthUnit")),
+                    areaUnit = AreaUnit.fromString(json.optString("areaUnit")),
+                    roomUnit = RoomUnit.fromString(json.optString("roomUnit")),
+                    lengthEntries = lengthEntries,
+                    areaEntries = areaEntries,
+                    roomEntries = roomEntries,
+                    projectId = json.optLong("projectId"),
+                    userId = json.optInt("userId")
+                )
+            },
+            onResult = onResult,
+            onError = onError
+        )
     }
 }
 

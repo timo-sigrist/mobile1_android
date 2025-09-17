@@ -6,11 +6,11 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.buildnote.android.model.Project
 import com.buildnote.android.service.JsonBuildnoteParser.parseProjects
-
+import com.squareup.moshi.Moshi
 
 
 class ProjectService private constructor(
-    queue: RequestQueue,
+    queue: RequestQueue
 ): BaseService(queue) {
 
     companion object {
