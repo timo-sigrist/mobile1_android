@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
+// fix
 @Composable
 fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifier) {
 
